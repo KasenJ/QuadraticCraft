@@ -1,2 +1,6 @@
-TEMPLATE = subdirs  
-SUBDIRS = Client Server
+TEMPLATE = subdirs
+
+SUBDIRS += \
+    Libs \
+    Client \
+    Server

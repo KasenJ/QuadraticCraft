@@ -1,16 +1,16 @@
-QT += core gui widget network
+QT += \
+    core \
+    gui \
+    widgets \
+    network
 
 TARGET = Client
-
-CONFIG   -= app_bundle
 
 TEMPLATE = app
 
 SOURCES += \
     Client.cpp \
-    Utils.cpp \
-    Arguments.cpp
+    Exec.cpp
 
 HEADERS += \
-    Utils.h \
-    Arguments.h
+    Exec.h

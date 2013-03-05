@@ -1,17 +1,16 @@
-QT += core network
+QT += \
+    core \
+    network
 
 TARGET = Server
 
-CONFIG   += console
-CONFIG   -= app_bundle
+CONFIG += console
 
 TEMPLATE = app
 
 SOURCES += \
     Server.cpp \
-    Utils.cpp \
-    Arguments.cpp
+    Exec.cpp
 
 HEADERS += \
-    Utils.h \
-    Arguments.h
+    Exec.h
