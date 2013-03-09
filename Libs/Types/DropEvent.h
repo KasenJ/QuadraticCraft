@@ -1,5 +1,5 @@
-#ifndef GETEVENT_H
-#define GETEVENT_H
+#ifndef SETEVENT_H
+#define SETEVENT_H
 
 #include <QPoint>
 #include <QByteArray>
@@ -7,21 +7,21 @@
 #include "Event.h"
 #include "Square.h"
 
-class GetEvent:public Event
+class DropEvent:public Event
 {
 private:
-	QPoint get;
+	QPoint drop;
 	BitType bit;
 
 public:
-	GetEvent(const QByteArray &data=QByteArray())
+	DropEvent(const QByteArray &data=QByteArray())
 	{
 		if(!data.isEmpty()){
 			QDataStream stream(data);
 			EventType type;
 			stream>>type;
-			if(type==Get){
-				stream>>get;
+			if(type==Drop){
+				stream>>drop;
 			}
 		}
 	}
@@ -30,16 +30,16 @@ public:
 	{
 		QByteArray data;
 		QDataStream stream(&data,QIODevice::WriteOnly);
-		EventType type=Get;
-		stream<<type<<get;
+		EventType type=Drop;
+		stream<<type<<drop;
 		return data;
 	}
 
-	inline const QPoint &getGet() const {return get;}
-	inline void setGet(const QPoint &get){this->get=get;}
+	inline const QPoint &getDrop() const {return drop;}
+	inline void setDrop(const QPoint &drop){this->drop=drop;}
 
 	inline BitType getBit() const {return bit;}
 	inline void setBit(BitType bit){this->bit=bit;}
 };
 
-#endif // GETEVENT_H
+#endif // SETEVENT_H

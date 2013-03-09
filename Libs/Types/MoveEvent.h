@@ -9,14 +9,32 @@
 class MoveEvent:public Event
 {
 private:
-	QPoint from;
 	QPoint to;
 
 public:
-	MoveEvent(const QByteArray &data=QByteArray());
-	QByteArray toByteArray();
-	inline const QPoint &fromPos();
-	inline const QPoint &toPos();
+	MoveEvent(const QByteArray &data=QByteArray())
+	{
+		if(!data.isEmpty()){
+			QDataStream stream(data);
+			EventType type;
+			stream>>type;
+			if(type==Move){
+				stream>>to;
+			}
+		}
+	}
+
+	QByteArray toByteArray() const
+	{
+		QByteArray data;
+		QDataStream stream(&data,QIODevice::WriteOnly);
+		EventType type=Move;
+		stream<<type<<to;
+		return data;
+	}
+
+	inline const QPoint &getTo() const {return to;}
+	inline void setTo(const QPoint &to){this->to=to;}
 };
 
 #endif // MOVEEVENT_H

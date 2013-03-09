@@ -7,7 +7,7 @@ UpdateEvent::UpdateEvent(const QByteArray &data)
 		quint8 type;
 		stream>>type;
 		if(type==Update){
-			stream>>rect;
+			stream>>rect>>bitmap;
 		}
 	}
 }
@@ -17,11 +17,6 @@ QByteArray UpdateEvent::toByteArray()
 	QByteArray data;
 	QDataStream stream(data);
 	quint8 type=Update;
-	stream<<type<<rect;
+	stream<<type<<rect<<bitmap;
 	return data;
-}
-
-const QRect &UpdateEvent::updateRect()
-{
-	return rect;
 }

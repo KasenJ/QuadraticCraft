@@ -1,20 +1,24 @@
-QT += core
+QT += core network
 
 TARGET = Types
 
 TEMPLATE =lib
 
 CONFIG += staticlib
+CONFIG += c++11
 
 DESTDIR = ../
 
 HEADERS += \
-    MoveEvent.h \
     Event.h \
+    DropEvent.h \
     GetEvent.h \
-    UpdateEvent.h
+    MoveEvent.h \
+    Socket.h \
+    Square.h \
+    UpdateEvent.h \
+    UserEvent.h
 
 SOURCES += \
-    MoveEvent.cpp \
-    GetEvent.cpp \
-    UpdateEvent.cpp
+    Socket.cpp \
+    Square.cpp

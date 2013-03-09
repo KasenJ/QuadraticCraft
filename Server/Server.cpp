@@ -1,10 +1,14 @@
 #include <QCoreApplication>
-#include "Exec.h"
+#include "Types.h"
+#include "Handler.h"
 
 int main(int argc, char *argv[])
 {
 	QCoreApplication a(argc, argv);
-	Exec exec;
-	exec.bind(12450);
+	Socket socket;
+	socket.setSendPort(45012);
+	socket.setReceivePort(12450);
+	Handler handler;
+	handler.setSocket(&socket);
 	return a.exec();
 }

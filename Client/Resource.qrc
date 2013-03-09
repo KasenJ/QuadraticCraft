@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/Bitmap">
+        <file>Square/000.png</file>
+        <file>Square/001.png</file>
+        <file>Square/002.png</file>
+    </qresource>
+</RCC>

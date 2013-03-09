@@ -8,9 +8,20 @@ CONFIG += console
 
 TEMPLATE = app
 
+CONFIG += c++11
+
 SOURCES += \
     Server.cpp \
-    Exec.cpp
+    Handler.cpp \
+    ./Handlers/UpdateEventHandle.cpp \
+    ./Handlers/UserEventHandle.cpp \
+    ./Handlers/DropEventHandle.cpp \
+    ./Handlers/GetEventHandle.cpp \
+    ./Handlers/MoveEventHandle.cpp
 
 HEADERS += \
-    Exec.h
+    Types.h \
+    Handler.h
+
+LIBS += -L../Libs\
+    -lTypes

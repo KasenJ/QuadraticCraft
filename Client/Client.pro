@@ -8,9 +8,23 @@ TARGET = Client
 
 TEMPLATE = app
 
+CONFIG += c++11
+
 SOURCES += \
     Client.cpp \
-    Exec.cpp
+    Interface.cpp \
+    Login.cpp
 
 HEADERS += \
-    Exec.h
+    Types.h \
+    Interface.h \
+    Login.h
+
+LIBS += -L../Libs\
+    -lTypes
+
+RESOURCES += \
+    Resource.qrc
+
+TRANSLATIONS = \
+    Chinese.ts
