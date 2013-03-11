@@ -3,11 +3,11 @@
 void Handler::UpdateEventHandle(const UpdateEvent &event,const QHostAddress &address)
 {
 	const QRect rect=event.getRect();
-	QList<BitType> bitmap;
+	QVector<BitType> bitmap;
 	int x=rect.x(),y=rect.y(),w=rect.width(),h=rect.height();
-	for(int i=0;i<w;i++){
-		for(int j=0;j<h;j++){
-			bitmap.append((x+y+i+j)&1);
+	for(int i=0;i<h;i++){
+		for(int j=0;j<w;j++){
+			bitmap.append(((x+y+i+j)&1)+1);
 		}
 	}
 	UpdateEvent reply;

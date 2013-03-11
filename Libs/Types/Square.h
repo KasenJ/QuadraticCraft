@@ -1,8 +1,9 @@
 #ifndef SQUARE_H
 #define SQUARE_H
 
-#include <QtGui>
-#include <QtCore>
+#include <QDir>
+#include <QList>
+#include <QPixmap>
 
 typedef quint8 BitType;
 

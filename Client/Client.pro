@@ -13,12 +13,14 @@ CONFIG += c++11
 SOURCES += \
     Client.cpp \
     Interface.cpp \
-    Login.cpp
+    Login.cpp \
+    Buffer.cpp
 
 HEADERS += \
     Types.h \
     Interface.h \
-    Login.h
+    Login.h \
+    Buffer.h
 
 LIBS += -L../Libs\
     -lTypes

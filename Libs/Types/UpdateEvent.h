@@ -11,7 +11,7 @@ class UpdateEvent:public Event
 {
 private:
 	QRect rect;
-	QList<BitType> bitmap;
+	QVector<BitType> bitmap;
 
 public:
 	UpdateEvent(const QByteArray &data=QByteArray())
@@ -38,8 +38,8 @@ public:
 	inline const QRect &getRect() const {return rect;}
 	inline void setRect(const QRect &rect){this->rect=rect;}
 
-	inline const QList<BitType> &getBitmap() const {return bitmap;}
-	inline void setBitmap(const QList<BitType> &bitmap){this->bitmap=bitmap;}
+	inline const QVector<BitType> &getBitmap() const {return bitmap;}
+	inline void setBitmap(const QVector<BitType> &bitmap){this->bitmap=bitmap;}
 
 	inline bool isEmpty() const {return bitmap.isEmpty();}
 	inline bool isValid() const {return bitmap.size()==rect.width()*rect.height();}

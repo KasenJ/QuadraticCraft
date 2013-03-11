@@ -6,6 +6,7 @@
 #include <QtWidgets>
 #include <QtNetwork>
 #include "Types.h"
+#include "Buffer.h"
 
 class Interface:public QWidget
 {
@@ -16,10 +17,9 @@ public:
 	void setServer(const QHostAddress &server);
 
 private:
-	QHostAddress server;
-	QPixmap buffer;
+	Buffer buffer;
 	Socket *socket;
-	Square square;
+	QHostAddress server;
 	QHash<int,bool> state;
 
 	void paintEvent(QPaintEvent *e);
@@ -27,7 +27,6 @@ private:
 	void keyReleaseEvent(QKeyEvent *e);
 
 public slots:
-	void render(const UpdateEvent &event);
 	void monitor();
 };
 
