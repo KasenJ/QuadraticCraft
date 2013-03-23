@@ -2,10 +2,12 @@
 
 void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address)
 {
+	qDebug()<<"Get UserEvent";
 	UserEvent reply;
 	switch(event.getState()){
 	case UserEvent::Login:{
 		if(event.getUsername()=="root"){
+			qDebug()<<"User"<<event.getUsername()<<"Logged";
 			reply.setState(UserEvent::Logged);
 			sendEvent(reply,address);
 			UpdateEvent init;

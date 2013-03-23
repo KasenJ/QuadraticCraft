@@ -13,12 +13,9 @@ HEADERS += \
     Event.h \
     DropEvent.h \
     GetEvent.h \
-    MoveEvent.h \
-    Socket.h \
-    Square.h \
     UpdateEvent.h \
-    UserEvent.h
+    UserEvent.h \
+    PlayerEvent.h \
+    Bit.h
 
 SOURCES += \
-    Socket.cpp \
-    Square.cpp

@@ -5,10 +5,9 @@ Login::Login(QWidget *parent) :
 {
 	setFixedSize(400,300);
 	setWindowTitle(tr("Login"));
-	move(QApplication::desktop()->screenGeometry().center()-QPoint(200,150));
 	QDialogButtonBox *button=new QDialogButtonBox(this);
 	button->setStandardButtons(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
-	button->setGeometry(140,250,120,40);
+	button->setGeometry(140,225,120,60);
 	QLineEdit *address=new QLineEdit(this);
 	address->setGeometry(100,120,200,20);
 	address->setPlaceholderText(tr("Server IP"));
@@ -57,4 +56,17 @@ void Login::setSocket(Socket *socket)
 const QHostAddress &Login::getServer() const
 {
 	return server;
+}
+
+void Login::showEvent(QShowEvent *e)
+{
+	QPoint end=QApplication::desktop()->screenGeometry().center()-QPoint(200,150);
+	QPoint sta=QPoint(end.x(),0);
+	QPropertyAnimation *animation=new QPropertyAnimation(this,"pos",this);
+	animation->setDuration(1200);
+	animation->setStartValue(sta);
+	animation->setEndValue(end);
+	animation->setEasingCurve(QEasingCurve::OutBounce);
+	animation->start();
+	QWidget::showEvent(e);
 }

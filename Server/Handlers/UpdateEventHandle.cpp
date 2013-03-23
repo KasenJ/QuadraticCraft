@@ -2,6 +2,7 @@
 
 void Handler::UpdateEventHandle(const UpdateEvent &event,const QHostAddress &address)
 {
+	qDebug()<<"Get UpdateEvent";
 	const QRect rect=event.getRect();
 	QVector<BitType> bitmap;
 	int x=rect.x(),y=rect.y(),w=rect.width(),h=rect.height();

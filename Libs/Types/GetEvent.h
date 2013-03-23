@@ -4,8 +4,8 @@
 #include <QPoint>
 #include <QByteArray>
 #include <QDataStream>
+#include "Bit.h"
 #include "Event.h"
-#include "Square.h"
 
 class GetEvent:public Event
 {

@@ -17,11 +17,12 @@ SOURCES += \
     ./Handlers/UserEventHandle.cpp \
     ./Handlers/DropEventHandle.cpp \
     ./Handlers/GetEventHandle.cpp \
-    ./Handlers/MoveEventHandle.cpp
+    ./Handlers/PlayerEventHandle.cpp
 
 HEADERS += \
     Types.h \
     Handler.h
 
 LIBS += -L../Libs\
-    -lTypes
+    -lTypes \
+    -lUtils

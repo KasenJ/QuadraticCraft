@@ -3,12 +3,7 @@
 
 #include <QtCore>
 #include <QtNetwork>
-#include "Event.h"
-#include "DropEvent.h"
-#include "GetEvent.h"
-#include "MoveEvent.h"
-#include "UpdateEvent.h"
-#include "UserEvent.h"
+#include "Types.h"
 
 typedef quint16 Port;
 
@@ -26,7 +21,7 @@ private:
 signals:
 	void getDropEvent(const DropEvent &event,const QHostAddress &address);
 	void getGetEvent(const GetEvent &event,const QHostAddress &address);
-	void getMoveEvent(const MoveEvent &event,const QHostAddress &address);
+	void getPlayerEvent(const PlayerEvent &event,const QHostAddress &address);
 	void getUpdateEvent(const UpdateEvent &event,const QHostAddress &address);
 	void getUserEvent(const UserEvent &event,const QHostAddress &address);
 

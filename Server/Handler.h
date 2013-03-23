@@ -19,7 +19,7 @@ private:
 public slots:
 	void DropEventHandle(const DropEvent &event,const QHostAddress &address);
 	void GetEventHandle(const GetEvent &event,const QHostAddress &address);
-	void MoveEventHandle(const MoveEvent &event,const QHostAddress &address);
+	void PlayerEventHandle(const PlayerEvent &event,const QHostAddress &address);
 	void UpdateEventHandle(const UpdateEvent &event,const QHostAddress &address);
 	void UserEventHandle(const UserEvent &event,const QHostAddress &address);
 };

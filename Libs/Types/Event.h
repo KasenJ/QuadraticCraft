@@ -9,7 +9,7 @@ typedef quint8 EventType;
 class Event
 {
 public:
-	enum{Drop,Get,Move,Update,User};
+	enum{Drop,Get,Player,Update,User};
 
 	virtual QByteArray toByteArray() const=0;
 

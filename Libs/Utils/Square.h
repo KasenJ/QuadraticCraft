@@ -2,15 +2,12 @@
 #define SQUARE_H
 
 #include <QDir>
-#include <QList>
+#include <QVector>
 #include <QPixmap>
 
-typedef quint8 BitType;
-
-class Square:public QList<QPixmap>
+class Square:public QVector<QPixmap>
 {
 public:
-	enum{Black,White,Red};
 	explicit Square();
 };
 

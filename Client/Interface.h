@@ -11,20 +11,27 @@
 class Interface:public QWidget
 {
 	Q_OBJECT
+	Q_PROPERTY(QPoint midPoint READ getMid WRITE setMid)
 public:
 	explicit Interface(QWidget *parent=0);
 	void setSocket(Socket *socket);
 	void setServer(const QHostAddress &server);
+	QPoint getMid(){return midPoint;}
+	void setMid(const QPoint &mid){midPoint=mid;update();}
 
 private:
 	Buffer buffer;
 	Socket *socket;
+	QPoint midPoint;
+	QPoint mousePoint;
 	QHostAddress server;
-	QHash<int,bool> state;
+	QHash<int,bool> keyState;
+	QPropertyAnimation *animation;
 
 	void paintEvent(QPaintEvent *e);
 	void keyPressEvent(QKeyEvent *e);
 	void keyReleaseEvent(QKeyEvent *e);
+	void mouseMoveEvent(QMouseEvent *e);
 
 public slots:
 	void monitor();

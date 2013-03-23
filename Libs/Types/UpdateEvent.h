@@ -2,10 +2,11 @@
 #define UPDATEEVENT_H
 
 #include <QRect>
+#include <QVector>
 #include <QByteArray>
 #include <QDataStream>
+#include "Bit.h"
 #include "Event.h"
-#include "Square.h"
 
 class UpdateEvent:public Event
 {

@@ -18,6 +18,8 @@ public:
 private:
 	QHostAddress server;
 	Socket *socket;
+
+	void showEvent(QShowEvent *e);
 };
 
 #endif // LOGIN_H

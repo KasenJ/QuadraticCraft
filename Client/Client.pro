@@ -23,10 +23,11 @@ HEADERS += \
     Buffer.h
 
 LIBS += -L../Libs\
-    -lTypes
+    -lTypes \
+    -lUtils
 
 RESOURCES += \
     Resource.qrc
 
 TRANSLATIONS = \
-    Chinese.ts
+    zh_CN.ts
