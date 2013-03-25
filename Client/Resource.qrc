@@ -3,6 +3,8 @@
         <file>Square/000.png</file>
         <file>Square/001.png</file>
         <file>Square/002.png</file>
+        <file>Square/003.png</file>
+        <file>Square/004.png</file>
     </qresource>
     <qresource prefix="/Trans">
         <file>zh_CN.qm</file>

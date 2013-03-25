@@ -57,9 +57,31 @@ void Interface::mouseMoveEvent(QMouseEvent *e)
 void Interface::monitor()
 {
 	auto move=[this](int x,int y){
-		QRect rect=buffer.getRect();
-		rect.moveTopLeft(rect.topLeft()+QPoint(x,y));
-		buffer.setRect(rect);
+		QRect current=buffer.getRect(),updated=current;
+		updated.moveTopLeft(current.topLeft()+QPoint(x,y));
+		buffer.setRect(updated);
+		if(x*y!=0){
+			;
+		}
+		else if(x==0){
+			if(y>0){
+				updated.setTop(current.bottom());
+			}
+			else{
+				updated.setBottom(current.top());
+			}
+		}
+		else if(y==0){
+			if(x>0){
+				updated.setLeft(current.right());
+			}
+			else{
+				updated.setRight(current.left());
+			}
+		}
+		UpdateEvent updateEvent;
+		updateEvent.setRect(updated);
+		socket->sendEvent(updateEvent,server);
 	};
 	if(keyState[Qt::Key_Left]||keyState[Qt::Key_A]){
 		move(-1,0);

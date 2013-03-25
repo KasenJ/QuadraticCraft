@@ -8,7 +8,7 @@ void Handler::UpdateEventHandle(const UpdateEvent &event,const QHostAddress &add
 	int x=rect.x(),y=rect.y(),w=rect.width(),h=rect.height();
 	for(int i=0;i<h;i++){
 		for(int j=0;j<w;j++){
-			bitmap.append(((x+y+i+j)&1)+1);
+			bitmap.append((((x+j)/2+(y+i)/2)&1)+3);
 		}
 	}
 	UpdateEvent reply;

@@ -11,7 +11,7 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 			reply.setState(UserEvent::Logged);
 			sendEvent(reply,address);
 			UpdateEvent init;
-			init.setRect(QRect(0,0,16,12));
+			init.setRect(QRect(0xFFFF,0xFFFF,16,12));
 			UpdateEventHandle(init,address);
 		}
 		else{
