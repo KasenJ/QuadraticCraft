@@ -1,4 +1,5 @@
 QT += \
+    sql \
     core \
     network
 

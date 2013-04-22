@@ -3,6 +3,14 @@
 Handler::Handler(QObject *parent):
 	QObject(parent)
 {
+	data=QSqlDatabase::addDatabase("QSQLITE");
+	data.setDatabaseName("Data.db");
+	data.open();
+}
+
+Handler::~Handler()
+{
+	data.close();
 }
 
 void Handler::setSocket(Socket *socket)
