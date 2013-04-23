@@ -12,8 +12,10 @@ DESTDIR = ../
 HEADERS += \
     Socket.h \
     Square.h \
-    Types.h
+    Types.h \
+    Utils.h
 
 SOURCES += \
     Socket.cpp \
-    Square.cpp
+    Square.cpp \
+    Utils.cpp
