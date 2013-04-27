@@ -4,11 +4,6 @@ Buffer::Buffer()
 {
 }
 
-const QRect &Buffer::getRect() const
-{
-	return rect;
-}
-
 void Buffer::setRect(const QRect &rect)
 {
 	UpdateEvent event;
@@ -17,29 +12,27 @@ void Buffer::setRect(const QRect &rect)
 	this->rect=rect;
 	bitmap.resize(rect.width()*rect.height());
 	bitmap.fill(Bit::Black);
-	update(event);
+	setBitmap(event.getBitmap(),event.getRect());
 }
 
-void Buffer::update(const UpdateEvent &event)
+void Buffer::setBitmap(const QVector<BitType> &_bitmap,const QRect &_rect)
 {
 	bool flag=false;
-	QRect receiveRect=event.getRect();
-	QVector<BitType> receiveBitmap=event.getBitmap();
 	if(rect.isNull()){
-		rect=receiveRect;
-		bitmap=receiveBitmap;
+		rect=_rect;
+		bitmap=_bitmap;
 		flag=true;
 	}
 	else{
-		int w=receiveRect.width();
-		int rl=receiveRect.left();
-		int rt=receiveRect.top();
+		int w=_rect.width();
+		int rl=_rect.left();
+		int rt=_rect.top();
 		int cl=rect.left();
 		int ct=rect.top();
-		for(int i=0;i<receiveBitmap.size();++i){
+		for(int i=0;i<_bitmap.size();++i){
 			int x=i%w+rl,y=i/w+rt;
 			if(rect.contains(x,y)){
-				bitmap[x-cl+rect.width()*(y-ct)]=receiveBitmap[i];
+				bitmap[x-cl+rect.width()*(y-ct)]=_bitmap[i];
 				flag=true;
 			}
 		}

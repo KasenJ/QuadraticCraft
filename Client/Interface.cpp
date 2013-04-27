@@ -18,7 +18,12 @@ Interface::Interface(QWidget *parent):
 void Interface::setSocket(Socket *socket)
 {
 	this->socket=socket;
-	connect(socket,&Socket::getUpdateEvent,&buffer,&Buffer::update);
+	connect(socket,&Socket::getPlayerEvent,[this](const PlayerEvent &e){
+		pack->setPackage(e.getPackage());
+	});
+	connect(socket,&Socket::getUpdateEvent,[this](const UpdateEvent &e){
+		buffer.setBitmap(e.getBitmap(),e.getRect());
+	});
 }
 
 void Interface::setServer(const QHostAddress &server)

@@ -42,7 +42,7 @@ public:
 	inline void setPosition(const QPoint &position){this->position=position;}
 
 	inline const Package &getPackage() const {return package;}
-	inline void setPosition(const Package &package){this->package=package;}
+	inline void setPackege(const Package &package){this->package=package;}
 };
 
 #endif // PLAYEREVENT_H

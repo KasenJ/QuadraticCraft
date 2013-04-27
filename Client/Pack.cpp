@@ -32,3 +32,20 @@ void Pack::push()
 		isPop=false;
 	}
 }
+
+void Pack::setPackage(const Package &change)
+{
+	for(auto item:change){
+		bool flag=true;
+		for(auto iter:package){
+			if(iter.first==item.first){
+				flag=false;
+				iter.second+=item.second;
+				break;
+			}
+		}
+		if(flag){
+			package.append(item);
+		}
+	}
+}
