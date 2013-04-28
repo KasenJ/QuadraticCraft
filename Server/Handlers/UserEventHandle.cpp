@@ -9,7 +9,7 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 	case UserEvent::Login:
 	{
 		QSqlQuery query;
-		query.prepare("SELECT * FROM Player WHERE PName=?");
+		query.prepare("SELECT Password FROM Player WHERE PName=?");
 		query.addBindValue(event.getUsername());
 		query.exec();
 		if(query.first()){
@@ -47,9 +47,22 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 			if(query.first()){
 				UpdateEvent initUpdate;
 				QRect initRect(0,0,16,12);
-				initRect.moveCenter(Utils::toPoint(query.value("Position").toInt()));
+				QPoint initPoint=Utils::toPoint(query.value("Position").toInt());
+				initRect.moveCenter(initPoint);
 				initUpdate.setRect(initRect);
 				UpdateEventHandle(initUpdate,address);
+				PlayerEvent initPlayer;
+				initPlayer.setPosition(initPoint);
+				query.prepare("SELECT Item, Number FROM Cell WHERE PName=?");
+				query.addBindValue(userMap[address]);
+				query.exec();
+				Package initPackage;
+				while(query.next()){
+					auto cell=qMakePair(query.value("Item").value<BitType>(),query.value("Number").value<qint8>());
+					initPackage.append(cell);
+				}
+				initPlayer.setPackege(initPackage);
+				socket->sendEvent(initPlayer,address);
 			}
 		}
 		else{

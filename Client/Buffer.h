@@ -17,7 +17,6 @@ private:
 	QRect rect;
 	QPixmap pixmap;
 	QVector<BitType> bitmap;
-	Square square;
 
 signals:
 	void buffered();

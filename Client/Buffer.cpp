@@ -1,5 +1,7 @@
 #include "Buffer.h"
 
+extern Square *square;
+
 Buffer::Buffer()
 {
 }
@@ -43,7 +45,7 @@ void Buffer::setBitmap(const QVector<BitType> &_bitmap,const QRect &_rect)
 		painter.begin(&pixmap);
 		int w=rect.width();
 		for(int i=0;i<bitmap.size();++i){
-			painter.drawPixmap((i%w)*50,(i/w)*50,square[bitmap[i]]);
+			painter.drawPixmap((i%w)*50,(i/w)*50,square->at(bitmap[i]));
 		}
 		painter.end();
 		emit buffered();

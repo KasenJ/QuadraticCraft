@@ -1,5 +1,7 @@
 #include "Interface.h"
 
+Square *square=NULL;
+
 Interface::Interface(QWidget *parent):
 	QWidget(parent)
 {
@@ -13,6 +15,7 @@ Interface::Interface(QWidget *parent):
 	connect(&buffer,SIGNAL(buffered()),this,SLOT(update()));
 	info=new Info(this);
 	pack=new Pack(this);
+	square=new Square;
 }
 
 void Interface::setSocket(Socket *socket)
