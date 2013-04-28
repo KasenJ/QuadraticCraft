@@ -8,7 +8,7 @@
 #include "Bit.h"
 #include "Event.h"
 
-typedef QList<QPair<BitType,quint8>> Package;
+typedef QList<QPair<BitType,qint8>> Package;
 
 class PlayerEvent:public Event
 {
@@ -42,7 +42,7 @@ public:
 	inline void setPosition(const QPoint &position){this->position=position;}
 
 	inline const Package &getPackage() const {return package;}
-	inline void setPosition(const Package &package){this->package=package;}
+	inline void setPackege(const Package &package){this->package=package;}
 };
 
 #endif // PLAYEREVENT_H

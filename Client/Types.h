@@ -8,6 +8,6 @@
 #include "../Libs/Types/UpdateEvent.h"
 #include "../Libs/Types/UserEvent.h"
 #include "../Libs/Utils/Socket.h"
-#include "../Libs/Utils/Square.h"
+#include "Square.h"
 
 #endif // TYPES_H

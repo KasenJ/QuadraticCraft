@@ -1,12 +1,17 @@
 #include "Buffer.h"
 
+extern Square *square;
+
 Buffer::Buffer()
 {
 }
 
-const QRect &Buffer::getRect() const
+void Buffer::draw(QPainter *painter)
 {
-	return rect;
+	int w=rect.width();
+	for(int i=0;i<bitmap.size();++i){
+		painter->drawPixmap((i%w)*50,(i/w)*50,square->at(bitmap[i]));
+	}
 }
 
 void Buffer::setRect(const QRect &rect)
@@ -17,42 +22,26 @@ void Buffer::setRect(const QRect &rect)
 	this->rect=rect;
 	bitmap.resize(rect.width()*rect.height());
 	bitmap.fill(Bit::Black);
-	update(event);
+	setBitmap(event.getBitmap(),event.getRect());
 }
 
-void Buffer::update(const UpdateEvent &event)
+void Buffer::setBitmap(const QVector<BitType> &_bitmap,const QRect &_rect)
 {
-	bool flag=false;
-	QRect receiveRect=event.getRect();
-	QVector<BitType> receiveBitmap=event.getBitmap();
 	if(rect.isNull()){
-		rect=receiveRect;
-		bitmap=receiveBitmap;
-		flag=true;
+		rect=_rect;
+		bitmap=_bitmap;
 	}
 	else{
-		int w=receiveRect.width();
-		int rl=receiveRect.left();
-		int rt=receiveRect.top();
+		int w=_rect.width();
+		int rl=_rect.left();
+		int rt=_rect.top();
 		int cl=rect.left();
 		int ct=rect.top();
-		for(int i=0;i<receiveBitmap.size();++i){
+		for(int i=0;i<_bitmap.size();++i){
 			int x=i%w+rl,y=i/w+rt;
 			if(rect.contains(x,y)){
-				bitmap[x-cl+rect.width()*(y-ct)]=receiveBitmap[i];
-				flag=true;
+				bitmap[x-cl+rect.width()*(y-ct)]=_bitmap[i];
 			}
 		}
-	}
-	if(flag){
-		QPainter painter;
-		pixmap=QPixmap(rect.size()*50);
-		painter.begin(&pixmap);
-		int w=rect.width();
-		for(int i=0;i<bitmap.size();++i){
-			painter.drawPixmap((i%w)*50,(i/w)*50,square[bitmap[i]]);
-		}
-		painter.end();
-		emit buffered();
 	}
 }

@@ -31,8 +31,6 @@ private:
 	void keyPressEvent(QKeyEvent *e);
 	void keyReleaseEvent(QKeyEvent *e);
 
-public slots:
-	void monitor();
 };
 
 #endif // EXEC_H

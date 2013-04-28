@@ -10,21 +10,16 @@ class Buffer:public QObject
 	Q_OBJECT
 public:
 	explicit Buffer();
-	const QRect &getRect() const;
-	void setRect(const QRect &rect);
-	const QPixmap &getPixmap(){return pixmap;}
+	void draw(QPainter *painter);
+	const QRect &getRect() const {return rect;}
 	
 private:
 	QRect rect;
-	QPixmap pixmap;
 	QVector<BitType> bitmap;
-	Square square;
-
-signals:
-	void buffered();
 
 public slots:
-	void update(const UpdateEvent &event);
+	void setRect(const QRect &rect);
+	void setBitmap(const QVector<BitType> &_bitmap,const QRect &_rect);
 };
 
 #endif // BITMAP_H

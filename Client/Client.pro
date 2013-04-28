@@ -15,6 +15,7 @@ SOURCES += \
     Interface.cpp \
     Login.cpp \
     Buffer.cpp \
+    Square.cpp \
     Info.cpp \
     Pack.cpp
 
@@ -23,6 +24,7 @@ HEADERS += \
     Interface.h \
     Login.h \
     Buffer.h \
+    Square.h \
     Info.h \
     Pack.h
 

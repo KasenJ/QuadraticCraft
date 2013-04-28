@@ -9,6 +9,5 @@
 #include "../Libs/Types/UserEvent.h"
 #include "../Libs/Utils/Utils.h"
 #include "../Libs/Utils/Socket.h"
-#include "../Libs/Utils/Square.h"
 
 #endif // TYPES_H
