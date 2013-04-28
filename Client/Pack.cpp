@@ -27,6 +27,7 @@ void Pack::paintEvent(QPaintEvent *e)
 			painter.drawRect(12.5+62.5*j,15+65*i,50,50);
 			if(c<package.size()){
 				painter.drawPixmap(12.5+62.5*j,15+65*i,square->at(package[c].first));
+				painter.drawText(16+62.5*j,62+65*i,QString("x%1").arg(package[c].second));
 			}
 			++c;
 		}
@@ -35,8 +36,9 @@ void Pack::paintEvent(QPaintEvent *e)
 		i=index/3;
 		j=index%3;
 		QPen pen;
+		pen.setWidthF(2.5);
 		pen.setColor(Qt::darkGray);
-		pen.setWidth(4);
+		pen.setJoinStyle(Qt::MiterJoin);
 		painter.setPen(pen);
 		painter.drawRect(12.5+62.5*j,15+65*i,50,50);
 	}

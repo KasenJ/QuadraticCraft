@@ -6,6 +6,14 @@ Buffer::Buffer()
 {
 }
 
+void Buffer::draw(QPainter *painter)
+{
+	int w=rect.width();
+	for(int i=0;i<bitmap.size();++i){
+		painter->drawPixmap((i%w)*50,(i/w)*50,square->at(bitmap[i]));
+	}
+}
+
 void Buffer::setRect(const QRect &rect)
 {
 	UpdateEvent event;
@@ -19,11 +27,9 @@ void Buffer::setRect(const QRect &rect)
 
 void Buffer::setBitmap(const QVector<BitType> &_bitmap,const QRect &_rect)
 {
-	bool flag=false;
 	if(rect.isNull()){
 		rect=_rect;
 		bitmap=_bitmap;
-		flag=true;
 	}
 	else{
 		int w=_rect.width();
@@ -35,19 +41,7 @@ void Buffer::setBitmap(const QVector<BitType> &_bitmap,const QRect &_rect)
 			int x=i%w+rl,y=i/w+rt;
 			if(rect.contains(x,y)){
 				bitmap[x-cl+rect.width()*(y-ct)]=_bitmap[i];
-				flag=true;
 			}
 		}
-	}
-	if(flag){
-		QPainter painter;
-		pixmap=QPixmap(rect.size()*50);
-		painter.begin(&pixmap);
-		int w=rect.width();
-		for(int i=0;i<bitmap.size();++i){
-			painter.drawPixmap((i%w)*50,(i/w)*50,square->at(bitmap[i]));
-		}
-		painter.end();
-		emit buffered();
 	}
 }
