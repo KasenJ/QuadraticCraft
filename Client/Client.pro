@@ -14,13 +14,17 @@ SOURCES += \
     Client.cpp \
     Interface.cpp \
     Login.cpp \
-    Buffer.cpp
+    Buffer.cpp \
+    Info.cpp \
+    Pack.cpp
 
 HEADERS += \
     Types.h \
     Interface.h \
     Login.h \
-    Buffer.h
+    Buffer.h \
+    Info.h \
+    Pack.h
 
 LIBS += -L../Libs\
     -lTypes \

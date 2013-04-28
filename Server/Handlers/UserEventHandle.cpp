@@ -22,19 +22,14 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 			}
 		}
 		else{
-			bool flag=true;
 			qDebug()<<"Init Player Info";
-			query.prepare("INSERT INTO Player VALUES (?,?,?)");
+			query.prepare("INSERT INTO Player VALUES (?,?,?,?,?)");
 			query.addBindValue(event.getUsername());
 			query.addBindValue("Undefined");
+			query.addBindValue("Undefined");
 			query.addBindValue(event.getPassword());
-			flag=flag&&query.exec();
-			qDebug()<<"Init Player Position";
-			query.prepare("INSERT INTO At VALUES (?,?)");
-			query.addBindValue(event.getUsername());
 			query.addBindValue(qrand()%(0xFFFFFFFF>>1));
-			flag=flag&&query.exec();
-			if(flag){
+			if(query.exec()){
 				qDebug()<<"Init Succeed";
 				reply.setState(UserEvent::Logged);
 			}
@@ -46,7 +41,7 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 		if(reply.getState()==UserEvent::Logged){
 			userMap[address]=event.getUsername();
 			qDebug()<<"User"<<userMap[address]<<"Logged";
-			query.prepare("SELECT Position FROM At WHERE PName=?");
+			query.prepare("SELECT Position FROM Player WHERE PName=?");
 			query.addBindValue(userMap[address]);
 			query.exec();
 			if(query.first()){
