@@ -5,8 +5,8 @@ void Handler::DropEventHandle(const DropEvent &event,const QHostAddress &address
 	qDebug()<<"Get DropEvent";
 	QSqlQuery query;
 	query.prepare("SELECT Number FROM Cell WHERE PName=? AND Item=? AND Number>0");
-	query.bindValue(0,userMap[address]);
-	query.bindValue(1,event.getBit());
+	query.addBindValue(userMap[address]);
+	query.addBindValue(event.getBit());
 	query.exec();
 	if(query.first()){
 		int number=query.value("Number").toInt()-1;
@@ -19,14 +19,22 @@ void Handler::DropEventHandle(const DropEvent &event,const QHostAddress &address
 			query.bindValue(1,userMap[address]);
 			query.bindValue(2,event.getBit());
 			query.exec();
-			qDebug()<<"Update Package Successfully";
+
 			query.prepare("UPDATE Cube SET TYPE=? WHERE POSITION=?");
 			query.bindValue(0,event.getBit());
 			query.bindValue(1,Utils::toInt(event.getDrop()));
 			query.exec();
-			qDebug()<<"Update Cube Successfully";
+
+			PlayerEvent reply;
+			Package change={(QPair<BitType,qint8>(event.getBit(),-1))};
+			reply.setPackege(change);
+			sendEvent(reply,address);
 		}
-		else qDebug()<<"No Space to Drop";
+		else{
+			qDebug()<<"No Space To Drop";
+		}
 	}
-	else qDebug()<<"No Such Item in Package";
+	else{
+		qDebug()<<"No Such Item In Package";
+	}
 }

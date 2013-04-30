@@ -14,41 +14,23 @@ Interface::Interface(QWidget *parent):
 	square=new Square;auto timer=new QTimer(this);
 	timer->start(100);
 	connect(timer,&QTimer::timeout,[this](){
-		auto move=[this](int x,int y){
-			QRect current=buffer.getRect(),updated=current;
-			updated.moveTopLeft(current.topLeft()+QPoint(x,y));
-			buffer.setRect(updated);
-			if(x==0){
-				if(y>0){
-					updated.setTop(current.bottom());
-				}
-				else{
-					updated.setBottom(current.top());
-				}
-			}
-			if(y==0){
-				if(x>0){
-					updated.setLeft(current.right());
-				}
-				else{
-					updated.setRight(current.left());
-				}
-			}
-			UpdateEvent updateEvent;
-			updateEvent.setRect(updated);
-			socket->sendEvent(updateEvent,server);
-		};
+		QPoint move(0,0);
 		if(keyState[Qt::Key_Left]||keyState[Qt::Key_A]){
-			move(-1,0);
+			move+=QPoint(-1,0);
 		}
 		if(keyState[Qt::Key_Down]||keyState[Qt::Key_S]){
-			move(0,+1);
+			move+=QPoint(0,+1);
 		}
 		if(keyState[Qt::Key_Right]||keyState[Qt::Key_D]){
-			move(+1,0);
+			move+=QPoint(+1,0);
 		}
 		if(keyState[Qt::Key_Up]||keyState[Qt::Key_W]){
-			move(0,-1);
+			move+=QPoint(0,-1);
+		}
+		if(!move.isNull()){
+			PlayerEvent playerEvent;
+			playerEvent.setPosition(info->getPosition()+move);
+			socket->sendEvent(playerEvent,server);
 		}
 
 		auto cursor=mapFromGlobal(QCursor::pos());
@@ -79,7 +61,42 @@ void Interface::setSocket(Socket *socket)
 {
 	this->socket=socket;
 	connect(socket,&Socket::getPlayerEvent,[this](const PlayerEvent &e){
-		pack->setPackage(e.getPackage());
+		if(!e.getPosition().isNull()){
+			info->setPosition(e.getPosition());
+			auto curPos=info->getPosition();
+			auto curRct=buffer.getRect();
+			QRect core(QPoint(0,0),curRct.size()/=2);
+			core.moveCenter(curRct.center());
+			if(!core.contains(curPos)){
+				QRect updated=buffer.getRect();
+				if(curPos.x()<core.left()){
+					core.moveLeft(curPos.x());
+				}
+				if(curPos.x()>core.right()){
+					core.moveRight(curPos.x());
+				}
+				if(curPos.y()<core.top()){
+					core.moveTop(curPos.y());
+				}
+				if(curPos.y()>core.bottom()){
+					core.moveBottom(curPos.y());
+				}
+				updated.moveCenter(core.center());
+				buffer.setRect(updated);
+				UpdateEvent updateEvent;
+				updateEvent.setRect(updated);
+				this->socket->sendEvent(updateEvent,server);
+			}
+		}
+		if(!e.getPackage().isEmpty()){
+			pack->setPackage(e.getPackage());
+		}
+		if(!e.getName().isEmpty()){
+			info->setPlayer(e.getName());
+		}
+		if(!e.getOccupation().isEmpty()){
+			info->setOccupation(e.getOccupation());
+		}
 		update();
 	});
 	connect(socket,&Socket::getUpdateEvent,[this](const UpdateEvent &e){
@@ -98,6 +115,7 @@ void Interface::paintEvent(QPaintEvent *e)
 	QPainter painter;
 	painter.begin(this);
 	buffer.draw(&painter);
+	info-> draw(&painter,buffer.getRect());
 	painter.end();
 	QWidget::paintEvent(e);
 }

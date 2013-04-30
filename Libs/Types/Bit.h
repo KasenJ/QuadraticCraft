@@ -6,7 +6,7 @@ typedef quint8 BitType;
 class Bit
 {
 public:
-	enum{Black,White,Red,Earth,Grass};
+	enum{Black,White,Earth,Grass};
 };
 
 #endif // BIT_H
