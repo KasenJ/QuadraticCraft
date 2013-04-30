@@ -37,6 +37,9 @@ Interface::Interface(QWidget *parent):
 			UpdateEvent updateEvent;
 			updateEvent.setRect(updated);
 			socket->sendEvent(updateEvent,server);
+			PlayerEvent playerEvent;
+			playerEvent.setPosition(info->getPosition()+QPoint(x,y));
+			socket->sendEvent(playerEvent,server);
 		};
 		if(keyState[Qt::Key_Left]||keyState[Qt::Key_A]){
 			move(-1,0);
@@ -79,7 +82,18 @@ void Interface::setSocket(Socket *socket)
 {
 	this->socket=socket;
 	connect(socket,&Socket::getPlayerEvent,[this](const PlayerEvent &e){
-		pack->setPackage(e.getPackage());
+		if(!e.getPosition().isNull()){
+			info->setPosition(e.getPosition());
+		}
+		if(!e.getPackage().isEmpty()){
+			pack->setPackage(e.getPackage());
+		}
+		if(!e.getName().isEmpty()){
+			info->setPlayer(e.getName());
+		}
+		if(!e.getOccupation().isEmpty()){
+			info->setOccupation(e.getOccupation());
+		}
 		update();
 	});
 	connect(socket,&Socket::getUpdateEvent,[this](const UpdateEvent &e){

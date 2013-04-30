@@ -41,7 +41,7 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 		if(reply.getState()==UserEvent::Logged){
 			userMap[address]=event.getUsername();
 			qDebug()<<"User"<<userMap[address]<<"Logged";
-			query.prepare("SELECT Position FROM Player WHERE PName=?");
+			query.prepare("SELECT Position,Occupation FROM Player WHERE PName=?");
 			query.addBindValue(userMap[address]);
 			query.exec();
 			if(query.first()){
@@ -52,6 +52,8 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 				initUpdate.setRect(initRect);
 				UpdateEventHandle(initUpdate,address);
 				PlayerEvent initPlayer;
+				initPlayer.setName(userMap[address]);
+				initPlayer.setOccupation(query.value("Occupation").toString());
 				initPlayer.setPosition(initPoint);
 				query.prepare("SELECT Item, Number FROM Cell WHERE PName=?");
 				query.addBindValue(userMap[address]);
@@ -62,6 +64,7 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 					initPackage.append(cell);
 				}
 				initPlayer.setPackege(initPackage);
+				initPlayer.setName(userMap[address]);
 				socket->sendEvent(initPlayer,address);
 			}
 		}
