@@ -22,7 +22,7 @@ void Pack::paintEvent(QPaintEvent *e)
 	painter.begin(this);
 	painter.setPen(Qt::gray);
 	int i,j,c=0;
-	for(i=0;i<9;++i){
+	for(i=0;i<4;++i){
 		for(j=0;j<3;++j){
 			painter.drawRect(12.5+62.5*j,15+65*i,50,50);
 			if(c<package.size()){
@@ -50,7 +50,7 @@ void Pack::mouseReleaseEvent(QMouseEvent *e)
 {
 	bool flag=true;
 	auto cursor=e->pos();
-	for(int i=0;i<9;++i){
+	for(int i=0;i<4;++i){
 		for(int j=0;j<3;++j){
 			if(QRect(12.5+62.5*j,15+65*i,50,50).contains(cursor)){
 				index=i*3+j;
