@@ -45,12 +45,8 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 			query.addBindValue(userMap[address]);
 			query.exec();
 			if(query.first()){
-				UpdateEvent initUpdate;
-				QRect initRect(0,0,16,12);
 				QPoint initPoint=Utils::toPoint(query.value("Position").toInt());
-				initRect.moveCenter(initPoint);
-				initUpdate.setRect(initRect);
-				UpdateEventHandle(initUpdate,address);
+
 				PlayerEvent initPlayer;
 				initPlayer.setName(userMap[address]);
 				initPlayer.setOccupation(query.value("Occupation").toString());
@@ -65,7 +61,26 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 				}
 				initPlayer.setPackege(initPackage);
 				initPlayer.setName(userMap[address]);
-				socket->sendEvent(initPlayer,address);
+				sendEvent(initPlayer,address);
+
+				UpdateEvent initUpdate;
+				QRect initRect(0,0,16,12);
+				initRect.moveCenter(initPoint);
+				int x=initRect.x(),y=initRect.y(),w=16,h=12;
+				QVector<BitType> initBitmap(w*h,Bit::Black);
+				for(int i=0;i<w;i++){
+					query.prepare("SELECT Type,Position FROM Cube WHERE Position>=? AND Position<?");
+					query.addBindValue(Utils::toInt(QPoint(x+i,y)));
+					query.addBindValue(Utils::toInt(QPoint(x+i,y+h)));
+					query.exec();
+					while(query.next()){
+						QPoint point=Utils::toPoint(query.value("Position").toInt());
+						initBitmap[(point.y()-y)*w+point.x()-x]=query.value("Type").toInt();
+					}
+				}
+				initUpdate.setRect(initRect);
+				initUpdate.setBitmap(initBitmap);
+				sendEvent(initUpdate,address);
 			}
 		}
 		else{
