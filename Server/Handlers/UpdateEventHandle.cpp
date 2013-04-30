@@ -8,8 +8,8 @@ void Handler::UpdateEventHandle(const UpdateEvent &event,const QHostAddress &add
 	QSqlQuery query;
 	bool flag;
 	int x=rect.x(),y=rect.y(),w=rect.width(),h=rect.height();
-	QVector<BitType> temp[w+1];
-	for(int j=x;j<=x+w;j++){
+	QVector<BitType> temp[w];
+	for(int j=x;j<x+w;j++){
 		query.prepare("SELECT Type FROM Cube WHERE Position>=? AND Position<=?");
 		query.addBindValue(j<<16+y);
 		query.addBindValue(j<<16+y+h);
@@ -25,8 +25,8 @@ void Handler::UpdateEventHandle(const UpdateEvent &event,const QHostAddress &add
 		}
 		else qDebug()<<"Update Bitmap From Point "<<j<<","<<y<<"In The UpdateEventHandle Failed";
 	}
-	for(int i=0;i<=h;i++){
-		for(int j=0;j<=w;j++){
+	for(int i=0;i<h;i++){
+		for(int j=0;j<w;j++){
 			bitmap.append(temp[j].at(i));
 		}
 	}
