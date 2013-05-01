@@ -46,7 +46,7 @@ public:
 	inline const Package &getPackage() const {return package;}
 	inline void setPackege(const Package &package){this->package=package;}
 
-	inline BitType getOperation() const {return operation;}
+	inline Operation getOperation() const {return operation;}
 	inline void setOperation(Operation operation){this->operation=operation;}
 };
 

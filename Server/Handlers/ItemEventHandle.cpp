@@ -37,41 +37,74 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 			sendEvent(reply,address);
 
 			query.prepare("UPDATE Cube SET Type=? Where Position=?");
-			query.addBindValue(type>>8);
+			query.addBindValue(type>>=8);
 			query.addBindValue(Utils::toInt(event.getPoint()));
 			query.exec();
+
+			UpdateEvent broad;
+			QList<QRect> rects={QRect(event.getPoint(),QSize(1,1))};
+			QVector<BitType> bitmap={static_cast<BitType>(type)};
+			broad.setRects(rects);
+			broad.setBitmap(bitmap);
+			for(auto user:userMap.keys()){
+				sendEvent(broad,user);
+			}
+
+			qDebug()<<"Get"<<event.getPoint();
 		}
-		else qDebug()<<"No such item in Cube";
+		else{
+			qDebug()<<"No such item in Cube";
+		}
+		break;
 	}
 	case ItemEvent::Drop:
 	{
 		QSqlQuery query;
-		query.prepare("SELECT Number FROM Cell WHERE PName=? AND Item=? AND Number>0");
-		BitType type=event.getPackage().first().first;
+		query.prepare("SELECT Number FROM Cell WHERE PName=? AND Item=?");
+		BitType _type=event.getPackage().first().first;
 		query.addBindValue(userMap[address]);
-		query.addBindValue(type);
+		query.addBindValue(_type);
 		query.exec();
 		if(query.first()){
-			int number=query.value("Number").toInt()-1;
+			int number=query.value("Number").toInt();
 			query.prepare("SELECT Type FROM Cube WHERE POSITION=?");
 			query.bindValue(0,Utils::toInt(event.getPoint()));
 			query.exec();
 			if(query.first()){
-				query.prepare("UPDATE Cell SET Number=? WHERE PName=? AND Item=? AND Number>0");
-				query.bindValue(0,number);
-				query.bindValue(1,userMap[address]);
-				query.bindValue(2,type);
+				BitType type=query.value("Type").toInt();
+				if(number>=2){
+					query.prepare("UPDATE Cell SET Number=? WHERE PName=? AND Item=?");
+					query.bindValue(0,--number);
+					query.bindValue(1,userMap[address]);
+					query.bindValue(2,_type);
+				}
+				else{
+					query.prepare("DELETE Cell WHERE PName=? AND Item=?");
+					query.bindValue(0,userMap[address]);
+					query.bindValue(1,_type);
+				}
 				query.exec();
 
 				query.prepare("UPDATE Cube SET TYPE=? WHERE POSITION=?");
-				query.bindValue(0,event.getPoint());
+				query.bindValue(0,(type<<8)+_type);
 				query.bindValue(1,Utils::toInt(event.getPoint()));
 				query.exec();
 
 				PlayerEvent reply;
-				Package change={(QPair<BitType,qint8>(type,-1))};
+				Package change={(QPair<BitType,qint8>(_type,-1))};
 				reply.setPackege(change);
 				sendEvent(reply,address);
+
+				UpdateEvent broad;
+				QList<QRect> rects={QRect(event.getPoint(),QSize(1,1))};
+				QVector<BitType> bitmap={static_cast<BitType>(_type)};
+				broad.setRects(rects);
+				broad.setBitmap(bitmap);
+				for(auto user:userMap.keys()){
+					sendEvent(broad,user);
+				}
+
+				qDebug()<<"Drop"<<event.getPoint();
 			}
 			else{
 				qDebug()<<"No Space To Drop";
@@ -80,6 +113,7 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 		else{
 			qDebug()<<"No Such Item In Package";
 		}
+		break;
 	}
 	}
 }

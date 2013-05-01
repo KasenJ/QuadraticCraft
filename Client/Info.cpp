@@ -37,7 +37,7 @@ Info::Info(QWidget *parent) :
 void Info::draw(QPainter *painter,QRect rect)
 {
 	QPoint trans(current.x()-rect.x(),current.y()-rect.y());
-	painter->drawPixmap(trans.x()*50,trans.y()*50,square->at(0));
+	painter->drawPixmap(trans.x()*50,trans.y()*50,square->at(1));
 }
 
 void Info::pop()

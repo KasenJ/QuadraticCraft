@@ -139,3 +139,24 @@ void Interface::keyReleaseEvent(QKeyEvent *e)
 {
 	keyState[e->key()]=false;
 }
+
+void Interface::mouseReleaseEvent(QMouseEvent *e)
+{
+	if(!info->isPopped()&&!pack->isPopped()){
+		ItemEvent itemEvent;
+		QPoint click=e->pos();
+		click=buffer->getRect().topLeft()+QPoint(click.x()/50,click.y()/50);
+		itemEvent.setPoint(click);
+		if(e->button()==Qt::RightButton&&pack->getIndex()!=-1){
+			itemEvent.setOperation(ItemEvent::Drop);
+			auto item=pack->getPackage()[pack->getIndex()];
+			item.second=1;
+			Package change={item};
+			itemEvent.setPackege(change);
+		}
+		if(e->button()==Qt::LeftButton){
+			itemEvent.setOperation(ItemEvent::Get);
+		}
+		socket->sendEvent(itemEvent,server);
+	}
+}
