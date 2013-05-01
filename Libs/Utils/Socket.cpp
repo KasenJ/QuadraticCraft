@@ -14,14 +14,9 @@ void Socket::readData()
 		QHostAddress address;
 		readDatagram(data.data(),data.size(),&address);
 		switch(Event::getType(data)){
-		case Event::Drop:{
-			DropEvent event(data);
-			emit getDropEvent(event,address);
-			break;
-		}
-		case Event::Get:{
-			GetEvent event(data);
-			emit getGetEvent(event,address);
+		case Event::Item:{
+			ItemEvent event(data);
+			emit getItemEvent(event,address);
 			break;
 		}
 		case Event::Player:{

@@ -11,11 +11,10 @@ DESTDIR = ../
 
 HEADERS += \
     Event.h \
-    DropEvent.h \
-    GetEvent.h \
     UpdateEvent.h \
     UserEvent.h \
     PlayerEvent.h \
-    Bit.h
+    Bit.h \
+    ItemEvent.h
 
 SOURCES += \

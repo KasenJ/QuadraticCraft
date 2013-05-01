@@ -3,4 +3,5 @@ TEMPLATE = subdirs
 SUBDIRS += \
     Libs \
     Client \
-    Server
+    Server \
+    Editor
