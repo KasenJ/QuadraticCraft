@@ -8,13 +8,16 @@
 #include "Bit.h"
 #include "Event.h"
 
-typedef QList<QPair<BitType,qint8>> Package;
+typedef QList< QPair<BitType,qint8> > Package;
 
 class PlayerEvent:public Event
 {
 private:
 	QPoint position;
 	Package package;
+
+	QString name;
+	QString occupation;
 
 public:
 	PlayerEvent(const QByteArray &data=QByteArray())
@@ -24,7 +27,7 @@ public:
 			EventType type;
 			stream>>type;
 			if(type==Player){
-				stream>>position>>package;
+				stream>>position>>package>>name>>occupation;
 			}
 		}
 	}
@@ -34,7 +37,7 @@ public:
 		QByteArray data;
 		QDataStream stream(&data,QIODevice::WriteOnly);
 		EventType type=Player;
-		stream<<type<<position<<package;
+		stream<<type<<position<<package<<name<<occupation;
 		return data;
 	}
 
@@ -43,6 +46,12 @@ public:
 
 	inline const Package &getPackage() const {return package;}
 	inline void setPackege(const Package &package){this->package=package;}
+
+	inline const QString &getName() const {return name;}
+	inline void setName(QString name){this->name=name;}
+
+	inline const QString &getOccupation() const {return occupation;}
+	inline void setOccupation(QString occupation){this->occupation=occupation;}
 };
 
 #endif // PLAYEREVENT_H

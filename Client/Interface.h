@@ -21,7 +21,7 @@ public:
 private:
 	Info *info;
 	Pack *pack;
-	Buffer buffer;
+	Buffer *buffer;
 	Socket *socket;
 	QHostAddress server;
 	QHash<int,bool> keyState;
@@ -30,6 +30,7 @@ private:
 	void resizeEvent(QResizeEvent *e);
 	void keyPressEvent(QKeyEvent *e);
 	void keyReleaseEvent(QKeyEvent *e);
+	void mouseReleaseEvent(QMouseEvent *e);
 
 };
 
