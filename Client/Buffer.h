@@ -9,7 +9,7 @@ class Buffer:public QObject
 {
 	Q_OBJECT
 public:
-	explicit Buffer();
+	explicit Buffer(QObject *parent=NULL);
 	void draw(QPainter *painter);
 	const QRect &getRect() const {return rect;}
 	

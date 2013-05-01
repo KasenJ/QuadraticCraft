@@ -7,6 +7,7 @@ Interface::Interface(QWidget *parent):
 {
 	info=new Info(this);
 	pack=new Pack(this);
+	buffer=new Buffer(this);
 	setMouseTracking(true);
 	setWindowTitle(tr("QuadraticCraft"));
 	setFixedSize(800,600);
@@ -64,11 +65,11 @@ void Interface::setSocket(Socket *socket)
 		if(!e.getPosition().isNull()){
 			info->setPosition(e.getPosition());
 			auto curPos=info->getPosition();
-			auto curRct=buffer.getRect();
+			auto curRct=buffer->getRect();
 			QRect core(QPoint(0,0),curRct.size()/=2);
 			core.moveCenter(curRct.center());
 			if(!core.contains(curPos)){
-				QRect updated=buffer.getRect();
+				QRect updated=curRct;
 				if(curPos.x()<core.left()){
 					core.moveLeft(curPos.x());
 				}
@@ -82,7 +83,7 @@ void Interface::setSocket(Socket *socket)
 					core.moveBottom(curPos.y());
 				}
 				updated.moveCenter(core.center());
-				buffer.setRect(updated);
+				buffer->setRect(updated);
 				UpdateEvent updateEvent;
 				updateEvent.setRect(updated);
 				this->socket->sendEvent(updateEvent,server);
@@ -100,7 +101,7 @@ void Interface::setSocket(Socket *socket)
 		update();
 	});
 	connect(socket,&Socket::getUpdateEvent,[this](const UpdateEvent &e){
-		buffer.setBitmap(e.getBitmap(),e.getRect());
+		buffer->setBitmap(e.getBitmap(),e.getRect());
 		update();
 	});
 }
@@ -114,8 +115,8 @@ void Interface::paintEvent(QPaintEvent *e)
 {
 	QPainter painter;
 	painter.begin(this);
-	buffer.draw(&painter);
-	info-> draw(&painter,buffer.getRect());
+	buffer->draw(&painter);
+	info->draw(&painter,buffer->getRect());
 	painter.end();
 	QWidget::paintEvent(e);
 }

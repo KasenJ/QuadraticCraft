@@ -2,7 +2,8 @@
 
 extern Square *square;
 
-Buffer::Buffer()
+Buffer::Buffer(QObject *parent):
+	QObject(parent)
 {
 }
 

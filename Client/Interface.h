@@ -21,7 +21,7 @@ public:
 private:
 	Info *info;
 	Pack *pack;
-	Buffer buffer;
+	Buffer *buffer;
 	Socket *socket;
 	QHostAddress server;
 	QHash<int,bool> keyState;
