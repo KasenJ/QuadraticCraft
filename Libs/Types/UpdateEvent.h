@@ -11,7 +11,7 @@
 class UpdateEvent:public Event
 {
 private:
-	QRect rect;
+	QList<QRect> rects;
 	QVector<BitType> bitmap;
 
 public:
@@ -22,7 +22,7 @@ public:
 			EventType type;
 			stream>>type;
 			if(type==Update){
-				stream>>rect>>bitmap;
+				stream>>rects>>bitmap;
 			}
 		}
 	}
@@ -32,18 +32,17 @@ public:
 		QByteArray data;
 		QDataStream stream(&data,QIODevice::WriteOnly);
 		EventType type=Update;
-		stream<<type<<rect<<bitmap;
+		stream<<type<<rects<<bitmap;
 		return data;
 	}
 
-	inline const QRect &getRect() const {return rect;}
-	inline void setRect(const QRect &rect){this->rect=rect;}
+	inline const QList<QRect> &getRects() const {return rects;}
+	inline void setRects(const QList<QRect> &rects){this->rects=rects;}
 
 	inline const QVector<BitType> &getBitmap() const {return bitmap;}
 	inline void setBitmap(const QVector<BitType> &bitmap){this->bitmap=bitmap;}
 
 	inline bool isEmpty() const {return bitmap.isEmpty();}
-	inline bool isValid() const {return bitmap.size()==rect.width()*rect.height();}
 };
 
 #endif // UPDATEEVENT_H

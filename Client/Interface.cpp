@@ -85,7 +85,8 @@ void Interface::setSocket(Socket *socket)
 				updated.moveCenter(core.center());
 				buffer->setRect(updated);
 				UpdateEvent updateEvent;
-				updateEvent.setRect(updated);
+				QList<QRect> rects={updated};
+				updateEvent.setRects(rects);
 				this->socket->sendEvent(updateEvent,server);
 			}
 		}
@@ -101,7 +102,7 @@ void Interface::setSocket(Socket *socket)
 		update();
 	});
 	connect(socket,&Socket::getUpdateEvent,[this](const UpdateEvent &e){
-		buffer->setBitmap(e.getBitmap(),e.getRect());
+		buffer->setBitmap(e.getBitmap(),e.getRects());
 		update();
 	});
 }

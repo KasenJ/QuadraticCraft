@@ -78,7 +78,8 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 						initBitmap[(point.y()-y)*w+point.x()-x]=query.value("Type").toInt();
 					}
 				}
-				initUpdate.setRect(initRect);
+				QList<QRect> initRects={initRect};
+				initUpdate.setRects(initRects);
 				initUpdate.setBitmap(initBitmap);
 				sendEvent(initUpdate,address);
 			}
