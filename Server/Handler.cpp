@@ -6,6 +6,7 @@ Handler::Handler(QObject *parent):
 	data=QSqlDatabase::addDatabase("QSQLITE");
 	data.setDatabaseName("Data.db");
 	data.open();
+	QSqlQuery().exec("PRAGMA synchronous = OFF;");
 }
 
 Handler::~Handler()

@@ -115,5 +115,35 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 		}
 		break;
 	}
+	case ItemEvent::Produce:
+	{
+		QSqlQuery query;
+		query.prepare("SELECT Item,Number FROM Cell WHERE PName=?");
+		query.exec();
+		Package all;
+		while(query.next()){
+			auto i=query.value("Item").value<BitType>();
+			auto n=query.value("Number").value<qint8>();
+			all.append(qMakePair(i,n));
+		}
+		bool flag=true;
+		Package change=event.getPackage();
+		for(auto &item:change){
+			if(all.indexOf(item)==-1){
+				flag=false;
+				break;
+			}
+			auto &n=item.second;
+			n=n>0?-n:n;
+		}
+		if(flag){
+			PlayerEvent reply;
+			reply.setPackege(change);
+			sendEvent(reply,address);
+		}
+		else{
+			qDebug()<<"No Such Items In Package";
+		}
+	}
 	}
 }
