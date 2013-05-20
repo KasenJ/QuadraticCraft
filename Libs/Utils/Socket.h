@@ -21,6 +21,7 @@ private:
 signals:
 	void getItemEvent(const ItemEvent &event,const QHostAddress &address);
 	void getPlayerEvent(const PlayerEvent &event,const QHostAddress &address);
+	void getScriptEvent(const ScriptEvent &event,const QHostAddress &address);
 	void getUpdateEvent(const UpdateEvent &event,const QHostAddress &address);
 	void getUserEvent(const UserEvent &event,const QHostAddress &address);
 

@@ -101,6 +101,9 @@ void Interface::setSocket(Socket *socket)
 		}
 		update();
 	});
+	connect(socket,&Socket::getScriptEvent,[this](const ScriptEvent &e){
+		;
+	});
 	connect(socket,&Socket::getUpdateEvent,[this](const UpdateEvent &e){
 		buffer->setBitmap(e.getBitmap(),e.getRects());
 		update();
