@@ -9,6 +9,10 @@ Interface::Interface(QWidget *parent):
 	info=new Info(this);
 	pack=new Pack(this);
 	buffer=new Buffer(this);
+	script=new QLabel(this);
+	script->setGeometry(210,600,380,100);
+	script->setAlignment(Qt::AlignCenter);
+	script->setAutoFillBackground(true);
 	setMouseTracking(true);
 	setWindowTitle(tr("QuadraticCraft"));
 	setFixedSize(800,600);
@@ -59,6 +63,13 @@ Interface::Interface(QWidget *parent):
 	});
 }
 
+Interface::~Interface()
+{
+	UserEvent event;
+	event.setState(UserEvent::Logout);
+	socket->sendEvent(event,server);
+}
+
 void Interface::setSocket(Socket *socket)
 {
 	this->socket=socket;
@@ -103,23 +114,41 @@ void Interface::setSocket(Socket *socket)
 		update();
 	});
 	connect(socket,&Socket::getScriptEvent,[this](const ScriptEvent &e){
-		blocked=true;
-		QTimer *delay=new QTimer(this);
-		delay->setSingleShot(true);
-		delay->start(0);
-		Dialog *dialog=new Dialog(e.getDialog());
-		connect(delay,&QTimer::timeout,[=](){
-			if(dialog->size()){
-				const auto &cur=dialog->takeFirst();
-				qDebug()<<cur.first;
-				delay->start(cur.second);
-			}
-			else{
-				blocked=false;
-				delete dialog;
-				delay->deleteLater();
-			}
-		});
+		if(!e.getDialog().isEmpty()){
+			blocked=true;
+			QTimer *delay=new QTimer(this);
+			delay->setSingleShot(true);
+			Dialog *dialog=new Dialog(e.getDialog());
+			QPropertyAnimation *anime=new QPropertyAnimation(script,"pos",this);
+			anime->setEasingCurve(QEasingCurve::OutCubic);
+			anime->setDuration(500);
+			anime->setStartValue(script->pos());
+			anime->setEndValue(QPoint(script->pos().x(),height()-100));
+			anime->start();
+			connect(anime,&QPropertyAnimation::finished,[=]{
+				if(dialog->isEmpty()){
+					delete dialog;
+					blocked=false;
+				}
+				else{
+					delay->start(0);
+				}
+			});
+			connect(delay,&QTimer::timeout,[=](){
+				if(dialog->isEmpty()){
+					delay->deleteLater();
+					anime->setDuration(500);
+					anime->setStartValue(script->pos());
+					anime->setEndValue(QPoint(script->pos().x(),height()));
+					anime->start();
+				}
+				else{
+					const auto &cur=dialog->takeFirst();
+					script->setText(cur.first);
+					delay->start(cur.second);
+				}
+			});
+		}
 	});
 	connect(socket,&Socket::getUpdateEvent,[this](const UpdateEvent &e){
 		buffer->setBitmap(e.getBitmap(),e.getRects());

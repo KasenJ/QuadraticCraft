@@ -85,8 +85,8 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 
 				ScriptEvent initScript;
 				Dialog initDialogs;
-				initDialogs.append(QPair<QString,quint32>("你想明白生命的意义吗？",1000));
-				initDialogs.append(QPair<QString,quint32>("你想真正的·······活着吗？",1000));
+				initDialogs.append(QPair<QString,quint32>("你想明白生命的意义吗？",2000));
+				initDialogs.append(QPair<QString,quint32>("你想真正的·······活着吗？",2000));
 				initScript.setDialog(initDialogs);
 				sendEvent(initScript,address);
 			}
@@ -95,6 +95,13 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 			qDebug()<<"User"<<event.getUsername()<<"Failed";
 		}
 		sendEvent(reply,address);
+		break;
+	}
+	case UserEvent::Logout:
+	{
+		userMap.remove(address);
+		qDebug()<<"User"<<event.getUsername()<<"Logout";
+		break;
 	}
 	}
 }

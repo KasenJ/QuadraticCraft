@@ -16,6 +16,7 @@ class Interface:public QWidget
 	Q_OBJECT
 public:
 	explicit Interface(QWidget *parent=0);
+	~Interface();
 	void setSocket(Socket *socket);
 	void setServer(const QHostAddress &server);
 
@@ -25,6 +26,7 @@ private:
 	Pack *pack;
 	Buffer *buffer;
 	Socket *socket;
+	QLabel *script;
 	QHostAddress server;
 	QHash<int,bool> keyState;
 
