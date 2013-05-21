@@ -9,6 +9,7 @@
 #include "Info.h"
 #include "Pack.h"
 #include "Buffer.h"
+#include "Square.h"
 
 class Interface:public QWidget
 {
@@ -19,6 +20,7 @@ public:
 	void setServer(const QHostAddress &server);
 
 private:
+	bool blocked;
 	Info *info;
 	Pack *pack;
 	Buffer *buffer;

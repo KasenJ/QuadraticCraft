@@ -5,6 +5,7 @@ Square *square=NULL;
 Interface::Interface(QWidget *parent):
 	QWidget(parent)
 {
+	blocked=false;
 	info=new Info(this);
 	pack=new Pack(this);
 	buffer=new Buffer(this);
@@ -102,7 +103,23 @@ void Interface::setSocket(Socket *socket)
 		update();
 	});
 	connect(socket,&Socket::getScriptEvent,[this](const ScriptEvent &e){
-		;
+		blocked=true;
+		QTimer *delay=new QTimer(this);
+		delay->setSingleShot(true);
+		delay->start(0);
+		Dialog *dialog=new Dialog(e.getDialog());
+		connect(delay,&QTimer::timeout,[=](){
+			if(dialog->size()){
+				const auto &cur=dialog->takeFirst();
+				qDebug()<<cur.first;
+				delay->start(cur.second);
+			}
+			else{
+				blocked=false;
+				delete dialog;
+				delay->deleteLater();
+			}
+		});
 	});
 	connect(socket,&Socket::getUpdateEvent,[this](const UpdateEvent &e){
 		buffer->setBitmap(e.getBitmap(),e.getRects());
@@ -135,7 +152,7 @@ void Interface::resizeEvent(QResizeEvent *e)
 
 void Interface::keyPressEvent(QKeyEvent *e)
 {
-	keyState[e->key()]=true;
+	keyState[e->key()]=blocked?false:true;
 }
 
 void Interface::keyReleaseEvent(QKeyEvent *e)
@@ -145,7 +162,7 @@ void Interface::keyReleaseEvent(QKeyEvent *e)
 
 void Interface::mouseReleaseEvent(QMouseEvent *e)
 {
-	if(!info->isPopped()&&!pack->isPopped()){
+	if(!info->isPopped()&&!pack->isPopped()&&!blocked){
 		ItemEvent itemEvent;
 		QPoint click=e->pos();
 		click=buffer->getRect().topLeft()+QPoint(click.x()/50,click.y()/50);

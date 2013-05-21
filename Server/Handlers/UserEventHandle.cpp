@@ -82,6 +82,13 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 				initUpdate.setRects(initRects);
 				initUpdate.setBitmap(initBitmap);
 				sendEvent(initUpdate,address);
+
+				ScriptEvent initScript;
+				Dialog initDialogs;
+				initDialogs.append(QPair<QString,quint32>("你想明白生命的意义吗？",1000));
+				initDialogs.append(QPair<QString,quint32>("你想真正的·······活着吗？",1000));
+				initScript.setDialog(initDialogs);
+				sendEvent(initScript,address);
 			}
 		}
 		else{
