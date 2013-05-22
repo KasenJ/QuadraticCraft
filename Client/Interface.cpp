@@ -5,8 +5,14 @@ Square *square=NULL;
 Interface::Interface(QWidget *parent):
 	QWidget(parent)
 {
+	blocked=false;
 	info=new Info(this);
 	pack=new Pack(this);
+	buffer=new Buffer(this);
+	script=new QLabel(this);
+	script->setGeometry(210,600,380,100);
+	script->setAlignment(Qt::AlignCenter);
+	script->setAutoFillBackground(true);
 	setMouseTracking(true);
 	setWindowTitle(tr("QuadraticCraft"));
 	setFixedSize(800,600);
@@ -57,6 +63,13 @@ Interface::Interface(QWidget *parent):
 	});
 }
 
+Interface::~Interface()
+{
+	UserEvent event;
+	event.setState(UserEvent::Logout);
+	socket->sendEvent(event,server);
+}
+
 void Interface::setSocket(Socket *socket)
 {
 	this->socket=socket;
@@ -64,11 +77,11 @@ void Interface::setSocket(Socket *socket)
 		if(!e.getPosition().isNull()){
 			info->setPosition(e.getPosition());
 			auto curPos=info->getPosition();
-			auto curRct=buffer.getRect();
+			auto curRct=buffer->getRect();
 			QRect core(QPoint(0,0),curRct.size()/=2);
 			core.moveCenter(curRct.center());
 			if(!core.contains(curPos)){
-				QRect updated=buffer.getRect();
+				QRect updated=curRct;
 				if(curPos.x()<core.left()){
 					core.moveLeft(curPos.x());
 				}
@@ -82,9 +95,10 @@ void Interface::setSocket(Socket *socket)
 					core.moveBottom(curPos.y());
 				}
 				updated.moveCenter(core.center());
-				buffer.setRect(updated);
+				buffer->setRect(updated);
 				UpdateEvent updateEvent;
-				updateEvent.setRect(updated);
+				QList<QRect> rects={updated};
+				updateEvent.setRects(rects);
 				this->socket->sendEvent(updateEvent,server);
 			}
 		}
@@ -99,8 +113,45 @@ void Interface::setSocket(Socket *socket)
 		}
 		update();
 	});
+	connect(socket,&Socket::getScriptEvent,[this](const ScriptEvent &e){
+		if(!e.getDialog().isEmpty()){
+			blocked=true;
+			QTimer *delay=new QTimer(this);
+			delay->setSingleShot(true);
+			Dialog *dialog=new Dialog(e.getDialog());
+			QPropertyAnimation *anime=new QPropertyAnimation(script,"pos",this);
+			anime->setEasingCurve(QEasingCurve::OutCubic);
+			anime->setDuration(500);
+			anime->setStartValue(script->pos());
+			anime->setEndValue(QPoint(script->pos().x(),height()-100));
+			anime->start();
+			connect(anime,&QPropertyAnimation::finished,[=]{
+				if(dialog->isEmpty()){
+					delete dialog;
+					blocked=false;
+				}
+				else{
+					delay->start(0);
+				}
+			});
+			connect(delay,&QTimer::timeout,[=](){
+				if(dialog->isEmpty()){
+					delay->deleteLater();
+					anime->setDuration(500);
+					anime->setStartValue(script->pos());
+					anime->setEndValue(QPoint(script->pos().x(),height()));
+					anime->start();
+				}
+				else{
+					const auto &cur=dialog->takeFirst();
+					script->setText(cur.first);
+					delay->start(cur.second);
+				}
+			});
+		}
+	});
 	connect(socket,&Socket::getUpdateEvent,[this](const UpdateEvent &e){
-		buffer.setBitmap(e.getBitmap(),e.getRect());
+		buffer->setBitmap(e.getBitmap(),e.getRects());
 		update();
 	});
 }
@@ -114,8 +165,8 @@ void Interface::paintEvent(QPaintEvent *e)
 {
 	QPainter painter;
 	painter.begin(this);
-	buffer.draw(&painter);
-	info-> draw(&painter,buffer.getRect());
+	buffer->draw(&painter);
+	info->draw(&painter,buffer->getRect());
 	painter.end();
 	QWidget::paintEvent(e);
 }
@@ -130,10 +181,31 @@ void Interface::resizeEvent(QResizeEvent *e)
 
 void Interface::keyPressEvent(QKeyEvent *e)
 {
-	keyState[e->key()]=true;
+	keyState[e->key()]=blocked?false:true;
 }
 
 void Interface::keyReleaseEvent(QKeyEvent *e)
 {
 	keyState[e->key()]=false;
+}
+
+void Interface::mouseReleaseEvent(QMouseEvent *e)
+{
+	if(!info->isPopped()&&!pack->isPopped()&&!blocked){
+		ItemEvent itemEvent;
+		QPoint click=e->pos();
+		click=buffer->getRect().topLeft()+QPoint(click.x()/50,click.y()/50);
+		itemEvent.setPoint(click);
+		if(e->button()==Qt::RightButton&&pack->getIndex()!=-1){
+			itemEvent.setOperation(ItemEvent::Drop);
+			auto item=pack->getPackage()[pack->getIndex()];
+			item.second=1;
+			Package change={item};
+			itemEvent.setPackege(change);
+		}
+		if(e->button()==Qt::LeftButton){
+			itemEvent.setOperation(ItemEvent::Get);
+		}
+		socket->sendEvent(itemEvent,server);
+	}
 }

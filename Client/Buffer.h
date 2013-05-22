@@ -4,12 +4,13 @@
 #include <QtGui>
 #include <QtCore>
 #include "Types.h"
+#include "Square.h"
 
 class Buffer:public QObject
 {
 	Q_OBJECT
 public:
-	explicit Buffer();
+	explicit Buffer(QObject *parent=NULL);
 	void draw(QPainter *painter);
 	const QRect &getRect() const {return rect;}
 	
@@ -19,7 +20,7 @@ private:
 
 public slots:
 	void setRect(const QRect &rect);
-	void setBitmap(const QVector<BitType> &_bitmap,const QRect &_rect);
+	void setBitmap(const QVector<BitType> &_bitmap,const QList<QRect> &_rects);
 };
 
 #endif // BITMAP_H

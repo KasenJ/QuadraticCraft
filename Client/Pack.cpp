@@ -8,9 +8,6 @@ Pack::Pack(QWidget *parent):
 	index=-1;
 	isPop=false;
 	setAutoFillBackground(true);
-	QPalette options;
-	options.setColor(QPalette::Background,Qt::white);
-	setPalette(options);
 	animation=new QPropertyAnimation(this,"pos",this);
 	animation->setDuration(200);
 	animation->setEasingCurve(QEasingCurve::OutCubic);
@@ -54,7 +51,7 @@ void Pack::mouseReleaseEvent(QMouseEvent *e)
 		for(int j=0;j<3;++j){
 			if(QRect(12.5+62.5*j,15+65*i,50,50).contains(cursor)){
 				index=i*3+j;
-				flag=false;
+				flag=index>=package.size();
 				break;
 			}
 		}
@@ -90,10 +87,14 @@ void Pack::setPackage(const Package &change)
 {
 	for(auto item:change){
 		bool flag=true;
-		for(auto iter:package){
+		for(auto &iter:package){
 			if(iter.first==item.first){
 				flag=false;
 				iter.second+=item.second;
+				if(iter.second==0){
+					package.removeOne(iter);
+					index=-1;
+				}
 				break;
 			}
 		}

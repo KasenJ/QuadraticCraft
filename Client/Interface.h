@@ -9,20 +9,24 @@
 #include "Info.h"
 #include "Pack.h"
 #include "Buffer.h"
+#include "Square.h"
 
 class Interface:public QWidget
 {
 	Q_OBJECT
 public:
 	explicit Interface(QWidget *parent=0);
+	~Interface();
 	void setSocket(Socket *socket);
 	void setServer(const QHostAddress &server);
 
 private:
+	bool blocked;
 	Info *info;
 	Pack *pack;
-	Buffer buffer;
+	Buffer *buffer;
 	Socket *socket;
+	QLabel *script;
 	QHostAddress server;
 	QHash<int,bool> keyState;
 
@@ -30,6 +34,7 @@ private:
 	void resizeEvent(QResizeEvent *e);
 	void keyPressEvent(QKeyEvent *e);
 	void keyReleaseEvent(QKeyEvent *e);
+	void mouseReleaseEvent(QMouseEvent *e);
 
 };
 

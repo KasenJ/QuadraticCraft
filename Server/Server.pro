@@ -16,8 +16,7 @@ SOURCES += \
     Handler.cpp \
     ./Handlers/UpdateEventHandle.cpp \
     ./Handlers/UserEventHandle.cpp \
-    ./Handlers/DropEventHandle.cpp \
-    ./Handlers/GetEventHandle.cpp \
+    ./Handlers/ItemEventHandle.cpp \
     ./Handlers/PlayerEventHandle.cpp
 
 HEADERS += \

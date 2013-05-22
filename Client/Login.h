@@ -16,8 +16,12 @@ public:
 	const QHostAddress &getServer() const;
 
 private:
-	QHostAddress server;
+	QLineEdit *address;
+	QLineEdit *username;
+	QLineEdit *password;
+	QDialogButtonBox *button;
 	Socket *socket;
+	QHostAddress server;
 
 	void showEvent(QShowEvent *e);
 };
