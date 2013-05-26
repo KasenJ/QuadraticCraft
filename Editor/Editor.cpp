@@ -13,6 +13,10 @@ int main()
 		query.exec("CREATE TABLE Player ( PName VARCHAR(20), TName VARCHAR(20), Occupation VARCHAR(20), Password VARCHAR(20), Position INTEGER, FOREIGN KEY(Position) REFERENCES Cube(Position), PRIMARY KEY(PName), UNIQUE(Position) );");
 		query.exec("CREATE TABLE Cube ( Position INTEGER, Type INTEGER, PRIMARY KEY(Position) );");
 		query.exec("CREATE TABLE Cell ( PName VARCHAR(20), Item INTEGER, Number INTEGER, PRIMARY KEY(PName, Item), FOREIGN KEY(PName) REFERENCES Player(PName) ON DELETE CASCADE );");
+		query.exec("CREATE TABLE Access (Type INTEGER, Control BOOL, PRIMARY KEY(Type) );");
+		query.exec("CREATE TABLE Formula (Composition INTEGER, Product INTEGER, Priority INTEGER, PRIMARY KEY(Composition));");
+		query.exec("CREATE TABLE Event (Rect BLOB, Script BLOB);");
+		query.exec("CREATE TABLE Info (Name VARCHAR(20), Data BLOB, PRIMARY KEY(Name));");
 		for(int i=0;i<50;i++){
 			for(int j=0;j<50;j++){
 				query.prepare("INSERT INTO Cube VALUES(?,?)");
