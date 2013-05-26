@@ -66,13 +66,14 @@ Interface::Interface(QWidget *parent):
 Interface::~Interface()
 {
 	UserEvent event;
+	event.setUsername(info->getPlayerName());
 	event.setState(UserEvent::Logout);
 	socket->sendEvent(event,server);
 }
 
-void Interface::setSocket(Socket *socket)
+void Interface::setSocket(Socket *_socket)
 {
-	this->socket=socket;
+	socket=_socket;
 	connect(socket,&Socket::getPlayerEvent,[this](const PlayerEvent &e){
 		if(!e.getPosition().isNull()){
 			info->setPosition(e.getPosition());
@@ -99,7 +100,7 @@ void Interface::setSocket(Socket *socket)
 				UpdateEvent updateEvent;
 				QList<QRect> rects={updated};
 				updateEvent.setRects(rects);
-				this->socket->sendEvent(updateEvent,server);
+				socket->sendEvent(updateEvent,server);
 			}
 		}
 		if(!e.getPackage().isEmpty()){
@@ -115,7 +116,7 @@ void Interface::setSocket(Socket *socket)
 	});
 	connect(socket,&Socket::getScriptEvent,[this](const ScriptEvent &e){
 		if(!e.getDialog().isEmpty()){
-			blocked=true;
+			++blocked;
 			QTimer *delay=new QTimer(this);
 			delay->setSingleShot(true);
 			Dialog *dialog=new Dialog(e.getDialog());
@@ -128,7 +129,7 @@ void Interface::setSocket(Socket *socket)
 			connect(anime,&QPropertyAnimation::finished,[=]{
 				if(dialog->isEmpty()){
 					delete dialog;
-					blocked=false;
+					--blocked;
 				}
 				else{
 					delay->start(0);
@@ -146,6 +147,41 @@ void Interface::setSocket(Socket *socket)
 					const auto &cur=dialog->takeFirst();
 					script->setText(cur.first);
 					delay->start(cur.second);
+				}
+			});
+		}
+		if(!e.getMotion().isEmpty()){
+			++blocked;
+			QTimer *delay=new QTimer(this);
+			delay->start(100);
+			Track *motion=new Track(e.getMotion());
+			connect(delay,&QTimer::timeout,[=](){
+				if(motion->isEmpty()){
+					delay->deleteLater();
+					delete motion;
+					--blocked;
+				}
+				else{
+					auto &cur=motion->first();
+					if(cur.second>0){
+						cur.second-=100;
+						PlayerEvent playerEvent;
+						QPoint c=info->getPosition();
+						QPoint m=cur.first.p2()-c;
+						if(!m.isNull()){
+							if(qAbs(m.x())>qAbs(m.y())){
+								m=m.x()>0?QPoint(1,0):QPoint(-1,0);
+							}
+							else{
+								m=m.y()>0?QPoint(0,1):QPoint(0,-1);
+							}
+							playerEvent.setPosition(c+m);
+							socket->sendEvent(playerEvent,server);
+						}
+					}
+					else{
+						motion->removeFirst();
+					}
 				}
 			});
 		}

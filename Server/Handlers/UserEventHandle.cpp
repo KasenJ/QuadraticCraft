@@ -85,9 +85,26 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 
 				ScriptEvent initScript;
 				Dialog initDialogs;
-				initDialogs.append(QPair<QString,quint32>("你想明白生命的意义吗？",2000));
-				initDialogs.append(QPair<QString,quint32>("你想真正的·······活着吗？",2000));
+				initDialogs.append(QPair<QString,quint32>("你想明白生命的意义吗？",5000));
+				initDialogs.append(QPair<QString,quint32>("你想真正的·······活着吗？",5000));
 				initScript.setDialog(initDialogs);
+				Track initMotions;
+				QLine line(initPoint,initPoint);
+				line=QLine(line.p2(),line.p2()+QPoint(0,4));
+				initMotions.append(QPair<QLine,quint32>(line,1000));
+				line=QLine(line.p2(),line.p2()+QPoint(4,0));
+				initMotions.append(QPair<QLine,quint32>(line,1000));
+				line=QLine(line.p2(),line.p2()+QPoint(0,-8));
+				initMotions.append(QPair<QLine,quint32>(line,2000));
+				line=QLine(line.p2(),line.p2()+QPoint(-8,0));
+				initMotions.append(QPair<QLine,quint32>(line,2000));
+				line=QLine(line.p2(),line.p2()+QPoint(0,8));
+				initMotions.append(QPair<QLine,quint32>(line,2000));
+				line=QLine(line.p2(),line.p2()+QPoint(4,0));
+				initMotions.append(QPair<QLine,quint32>(line,1000));
+				line=QLine(line.p2(),line.p2()+QPoint(0,-4));
+				initMotions.append(QPair<QLine,quint32>(line,1000));
+				initScript.setMotion(initMotions);
 				sendEvent(initScript,address);
 			}
 		}

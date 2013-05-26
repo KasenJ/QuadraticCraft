@@ -17,11 +17,11 @@ class Interface:public QWidget
 public:
 	explicit Interface(QWidget *parent=0);
 	~Interface();
-	void setSocket(Socket *socket);
+	void setSocket(Socket *_socket);
 	void setServer(const QHostAddress &server);
 
 private:
-	bool blocked;
+	int blocked;
 	Info *info;
 	Pack *pack;
 	Buffer *buffer;

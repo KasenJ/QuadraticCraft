@@ -19,7 +19,6 @@ void Handler::UpdateEventHandle(const UpdateEvent &event,const QHostAddress &add
 			}
 		}
 		bitmap+=bits;
-		qDebug()<<"Rect"<<rect<<"Updated";
 	}
 	UpdateEvent reply=event;
 	reply.setBitmap(bitmap);
