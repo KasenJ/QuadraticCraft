@@ -53,7 +53,6 @@ void Handler::PlayerEventHandle(const PlayerEvent &event,const QHostAddress &add
 			query.exec();
 		}
 		if(flag){
-			qDebug()<<"Update Item"<<it.first<<"Succeed";
 			change.append(it);
 		}
 		else{

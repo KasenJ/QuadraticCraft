@@ -49,8 +49,6 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 			for(auto user:userMap.keys()){
 				sendEvent(broad,user);
 			}
-
-			qDebug()<<"Get"<<event.getPoint();
 		}
 		else{
 			qDebug()<<"No such item in Cube";
@@ -79,7 +77,7 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 					query.bindValue(2,_type);
 				}
 				else{
-					query.prepare("DELETE Cell WHERE PName=? AND Item=?");
+					query.prepare("DELETE FROM Cell WHERE PName=? AND Item=?");
 					query.bindValue(0,userMap[address]);
 					query.bindValue(1,_type);
 				}
@@ -103,8 +101,6 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 				for(auto user:userMap.keys()){
 					sendEvent(broad,user);
 				}
-
-				qDebug()<<"Drop"<<event.getPoint();
 			}
 			else{
 				qDebug()<<"No Space To Drop";
