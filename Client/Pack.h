@@ -22,7 +22,9 @@ private:
 	QPropertyAnimation *animation;
 
 	void paintEvent(QPaintEvent *e);
+	void mousePressEvent(QMouseEvent *e);
 	void mouseReleaseEvent(QMouseEvent *e);
+	int getIndex(const QPoint &p) const;
 
 public slots:
 	void pop();

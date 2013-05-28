@@ -81,7 +81,10 @@ void Interface::setSocket(Socket *_socket)
 			auto curRct=buffer->getRect();
 			QRect core(QPoint(0,0),curRct.size()/=2);
 			core.moveCenter(curRct.center());
-			if(!core.contains(curPos)){
+			if(core.contains(curPos)){
+				update();
+			}
+			else{
 				QRect updated=curRct;
 				if(curPos.x()<core.left()){
 					core.moveLeft(curPos.x());
@@ -112,7 +115,6 @@ void Interface::setSocket(Socket *_socket)
 		if(!e.getOccupation().isEmpty()){
 			info->setOccupation(e.getOccupation());
 		}
-		update();
 	});
 	connect(socket,&Socket::getScriptEvent,[this](const ScriptEvent &e){
 		if(!e.getDialog().isEmpty()){

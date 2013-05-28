@@ -5,7 +5,7 @@ extern Square *square;
 Pack::Pack(QWidget *parent):
 	QWidget(parent)
 {
-	index=-1;
+	index=drag=-1;
 	isPop=false;
 	setAutoFillBackground(true);
 	animation=new QPropertyAnimation(this,"pos",this);
@@ -43,24 +43,33 @@ void Pack::paintEvent(QPaintEvent *e)
 	QWidget::paintEvent(e);
 }
 
+void Pack::mousePressEvent(QMouseEvent *e)
+{
+	QPair<BitType,qint8> item=package[getIndex(e->pos())];
+}
+
 void Pack::mouseReleaseEvent(QMouseEvent *e)
 {
+	drag=-1;
+	index=getIndex(e->pos());
+	update();
+	QWidget::mouseReleaseEvent(e);
+}
+
+int Pack::getIndex(const QPoint &p) const
+{
+	int _index;
 	bool flag=true;
-	auto cursor=e->pos();
 	for(int i=0;i<4;++i){
 		for(int j=0;j<3;++j){
-			if(QRect(12.5+62.5*j,15+65*i,50,50).contains(cursor)){
-				index=i*3+j;
-				flag=index>=package.size();
+			if(QRect(12.5+62.5*j,15+65*i,50,50).contains(p)){
+				_index=i*3+j;
+				flag=_index>=package.size();
 				break;
 			}
 		}
 	}
-	if(flag){
-		index=-1;
-	}
-	update();
-	QWidget::mouseReleaseEvent(e);
+	return flag?-1:_index;
 }
 
 void Pack::pop()
