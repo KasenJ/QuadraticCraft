@@ -7,6 +7,7 @@
 #include "../Libs/Types/ScriptEvent.h"
 #include "../Libs/Types/UpdateEvent.h"
 #include "../Libs/Types/UserEvent.h"
+#include "../Libs/Utils/Utils.h"
 #include "../Libs/Utils/Socket.h"
 
 #endif // TYPES_H

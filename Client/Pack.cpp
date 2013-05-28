@@ -5,12 +5,14 @@ extern Square *square;
 Pack::Pack(QWidget *parent):
 	QWidget(parent)
 {
-	index=drag=-1;
-	isPop=false;
+	index=-1;
+	isPop=isDrag=false;
 	setAutoFillBackground(true);
 	animation=new QPropertyAnimation(this,"pos",this);
 	animation->setDuration(200);
 	animation->setEasingCurve(QEasingCurve::OutCubic);
+	produce=new Produce(this);
+	produce->setGeometry(10,300,180,290);
 }
 
 void Pack::paintEvent(QPaintEvent *e)
@@ -21,10 +23,10 @@ void Pack::paintEvent(QPaintEvent *e)
 	int i,j,c=0;
 	for(i=0;i<4;++i){
 		for(j=0;j<3;++j){
-			painter.drawRect(12.5+62.5*j,15+65*i,50,50);
+			painter.drawRect(mapRect(i,j));
 			if(c<package.size()){
-				painter.drawPixmap(12.5+62.5*j,15+65*i,square->at(package[c].first));
-				painter.drawText(16+62.5*j,62+65*i,QString("x%1").arg(package[c].second));
+				painter.drawPixmap(mapPosition(i,j),square->at(package[c].first));
+				painter.drawText(mapPosition(i,j)+QPoint(4,47.5),QString("x%1").arg(package[c].second));
 			}
 			++c;
 		}
@@ -37,20 +39,34 @@ void Pack::paintEvent(QPaintEvent *e)
 		pen.setColor(Qt::darkGray);
 		pen.setJoinStyle(Qt::MiterJoin);
 		painter.setPen(pen);
-		painter.drawRect(12.5+62.5*j,15+65*i,50,50);
+		painter.drawRect(mapRect(i,j));
 	}
 	painter.end();
 	QWidget::paintEvent(e);
 }
 
-void Pack::mousePressEvent(QMouseEvent *e)
+void Pack::mouseMoveEvent(QMouseEvent *e)
 {
-	QPair<BitType,qint8> item=package[getIndex(e->pos())];
+	if(isDrag){
+		int i=getIndex(e->pos());
+		if(i>=0){
+			QMimeData *data=new QMimeData;
+			data->setData("Item",Utils::toByteArray(package[i]));
+			QDrag drag(this);
+			drag.setMimeData(data);
+			drag.setPixmap(square->at(package[i].first));
+			drag.setHotSpot(e->pos()-mapPosition(i/3,i%3));
+			drag.exec();
+		}
+	}
+	else{
+		isDrag=true;
+	}
 }
 
 void Pack::mouseReleaseEvent(QMouseEvent *e)
 {
-	drag=-1;
+	isDrag=false;
 	index=getIndex(e->pos());
 	update();
 	QWidget::mouseReleaseEvent(e);
@@ -62,7 +78,7 @@ int Pack::getIndex(const QPoint &p) const
 	bool flag=true;
 	for(int i=0;i<4;++i){
 		for(int j=0;j<3;++j){
-			if(QRect(12.5+62.5*j,15+65*i,50,50).contains(p)){
+			if(mapRect(i,j).contains(p)){
 				_index=i*3+j;
 				flag=_index>=package.size();
 				break;
@@ -70,6 +86,16 @@ int Pack::getIndex(const QPoint &p) const
 		}
 	}
 	return flag?-1:_index;
+}
+
+QRect Pack::mapRect(int i,int j) const
+{
+	return QRect(mapPosition(i,j),QSize(50,50));
+}
+
+QPoint Pack::mapPosition(int i,int j) const
+{
+	return QPoint(12.5+62.5*j,15+65*i);
 }
 
 void Pack::pop()
