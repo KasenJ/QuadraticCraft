@@ -14,7 +14,7 @@ int main()
 		query.exec("CREATE TABLE Cube ( Position INTEGER, Type INTEGER, PRIMARY KEY(Position) );");
 		query.exec("CREATE TABLE Cell ( PName VARCHAR(20), Item INTEGER, Number INTEGER, PRIMARY KEY(PName, Item), FOREIGN KEY(PName) REFERENCES Player(PName) ON DELETE CASCADE );");
 		query.exec("CREATE TABLE Access (Type INTEGER, Control BOOL, PRIMARY KEY(Type) );");
-		query.exec("CREATE TABLE Formula (Composition INTEGER, Product INTEGER, Occupation VARCHAR(20), Priority INTEGER, UNIQUE(Composition, Product, Occupation));");
+		query.exec("CREATE TABLE Formula (Composition INTEGER, Product INTEGER, Occupation VARCHAR(20), UNIQUE(Composition, Occupation));");
 		query.exec("CREATE TABLE Event (Rect BLOB, Script BLOB);");
 		query.exec("CREATE TABLE Info (Name VARCHAR(20), Data BLOB, PRIMARY KEY(Name));");
 		for(int i=0;i<50;i++){
