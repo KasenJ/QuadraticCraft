@@ -123,17 +123,32 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 			all.append(qMakePair(i,n));
 		}
 		bool flag=true;
-		Package change=event.getPackage();
-		for(auto &item:change){
+		Package composition=event.getPackage();
+		for(auto &item:composition){
 			if(all.indexOf(item)==-1){
 				flag=false;
 				break;
 			}
-			auto &n=item.second;
-			n=n>0?-n:n;
 		}
 		if(flag){
 			PlayerEvent reply;
+			Package change;
+			query.prepare("SELECT Occupation FROM Player WHERE PName=?");
+			query.addBindValue(userMap[address]);
+			query.exec();
+			if(query.first()){
+				QString occu=query.value("Occupation").toString();
+				query.prepare("SELECT * FROM Formula WHERE Occupation=?");
+				query.addBindValue(occu);
+				query.exec();
+				if(query.first()){
+					while(query.next()){
+						if(query.value("Composition").toInt()==c){
+
+						}
+					}
+				}
+			}
 			reply.setPackege(change);
 			sendEvent(reply,address);
 		}

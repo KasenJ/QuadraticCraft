@@ -10,8 +10,21 @@ void Handler::PlayerEventHandle(const PlayerEvent &event,const QHostAddress &add
 	bool reach=query.first();
 	if(reach){
 		int type=query.value("Type").toInt();
-		if(type==0){
-			reach=false;
+		reach=access[type];
+	}
+	if(reach){
+		for(auto iter=events.begin();iter!=events.end();){
+			if(iter->first.contains(event.getPosition())){
+				ScriptEvent replyScr=iter->second;
+				query.prepare("DELETE FROM Event WHERE Rect=?");
+				query.addBindValue(Utils::toByteArray(iter->first));
+				query.exec();
+				iter=events.erase(iter);
+				sendEvent(replyScr,address);
+			}
+			else{
+				++iter;
+			}
 		}
 	}
 	PlayerEvent reply;
