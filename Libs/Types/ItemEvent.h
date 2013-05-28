@@ -8,7 +8,8 @@
 #include "Event.h"
 
 typedef quint8 Operation;
-typedef QList< QPair<BitType,qint8> > Package;
+typedef QPair<BitType,qint8> Cell;
+typedef QList<Cell> Package;
 
 class ItemEvent:public Event
 {

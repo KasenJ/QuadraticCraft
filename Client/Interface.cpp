@@ -42,7 +42,7 @@ Interface::Interface(QWidget *parent):
 		auto cursor=mapFromGlobal(QCursor::pos());
 		int x=cursor.x(),y=cursor.y();
 
-		if(x<-50||x>width()+50||y<-50||y>width()+50){
+		if(x<-50||x>width()+50||y<-50||y>height()+50){
 			info->push();
 			pack->push();
 		}
@@ -53,10 +53,10 @@ Interface::Interface(QWidget *parent):
 			if(x<width()-250){
 				pack->push();
 			}
-			if(x<50){
+			if(!blocked&&x<50){
 				info->pop();
 			}
-			if(x>width()-50){
+			if(!blocked&&x>width()-50){
 				pack->pop();
 			}
 		}
@@ -81,7 +81,10 @@ void Interface::setSocket(Socket *_socket)
 			auto curRct=buffer->getRect();
 			QRect core(QPoint(0,0),curRct.size()/=2);
 			core.moveCenter(curRct.center());
-			if(!core.contains(curPos)){
+			if(core.contains(curPos)){
+				update();
+			}
+			else{
 				QRect updated=curRct;
 				if(curPos.x()<core.left()){
 					core.moveLeft(curPos.x());
@@ -112,7 +115,6 @@ void Interface::setSocket(Socket *_socket)
 		if(!e.getOccupation().isEmpty()){
 			info->setOccupation(e.getOccupation());
 		}
-		update();
 	});
 	connect(socket,&Socket::getScriptEvent,[this](const ScriptEvent &e){
 		if(!e.getDialog().isEmpty()){

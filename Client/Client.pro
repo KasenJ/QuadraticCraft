@@ -17,7 +17,8 @@ SOURCES += \
     Buffer.cpp \
     Square.cpp \
     Info.cpp \
-    Pack.cpp
+    Pack.cpp \
+    Produce.cpp
 
 HEADERS += \
     Types.h \
@@ -26,7 +27,8 @@ HEADERS += \
     Buffer.h \
     Square.h \
     Info.h \
-    Pack.h
+    Pack.h \
+    Produce.h
 
 LIBS += -L../Libs\
     -lTypes \

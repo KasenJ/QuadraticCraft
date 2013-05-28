@@ -32,7 +32,7 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 			}
 			query.exec();
 			PlayerEvent reply;
-			Package change={(QPair<BitType,qint8>(type,1))};
+			Package change={Cell(type,1)};
 			reply.setPackege(change);
 			sendEvent(reply,address);
 
@@ -89,7 +89,7 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 				query.exec();
 
 				PlayerEvent reply;
-				Package change={(QPair<BitType,qint8>(_type,-1))};
+				Package change={Cell(_type,-1)};
 				reply.setPackege(change);
 				sendEvent(reply,address);
 
@@ -143,9 +143,7 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 				query.exec();
 				if(query.first()){
 					while(query.next()){
-						if(query.value("Composition").toInt()==c){
-
-						}
+						;
 					}
 				}
 			}

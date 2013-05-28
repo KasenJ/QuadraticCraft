@@ -5,6 +5,7 @@
 #include <QtWidgets>
 #include "Types.h"
 #include "Square.h"
+#include "Produce.h"
 
 class Pack:public QWidget
 {
@@ -18,11 +19,18 @@ public:
 private:
 	int index;
 	bool isPop;
+	bool isDrag;
 	Package package;
+	Produce *produce;
 	QPropertyAnimation *animation;
 
 	void paintEvent(QPaintEvent *e);
+	void mouseMoveEvent(QMouseEvent *e);
 	void mouseReleaseEvent(QMouseEvent *e);
+
+	int getIndex(const QPoint &p) const;
+	QRect mapRect(int i,int j) const;
+	QPoint mapPosition(int i,int j) const;
 
 public slots:
 	void pop();
