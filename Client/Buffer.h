@@ -4,6 +4,7 @@
 #include <QtGui>
 #include <QtCore>
 #include "Types.h"
+#include "Square.h"
 
 class Buffer:public QObject
 {

@@ -14,6 +14,7 @@ public:
 	void draw(QPainter *painter,QRect rect);
 	bool isPopped(){return isPop;}
 	inline const QPoint &getPosition() const {return current;}
+	inline const QString getPlayerName() const {return playerE->text();}
 
 private:
 	bool isPop;

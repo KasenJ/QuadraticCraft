@@ -7,9 +7,6 @@ Info::Info(QWidget *parent) :
 {
 	isPop=false;
 	setAutoFillBackground(true);
-	QPalette options;
-	options.setColor(QPalette::Background,Qt::white);
-	setPalette(options);
 	animation=new QPropertyAnimation(this,"pos",this);
 	animation->setDuration(200);
 	animation->setEasingCurve(QEasingCurve::OutCubic);
