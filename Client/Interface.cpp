@@ -5,9 +5,14 @@ Square *square=NULL;
 Interface::Interface(QWidget *parent):
 	QWidget(parent)
 {
+	blocked=false;
 	info=new Info(this);
 	pack=new Pack(this);
 	buffer=new Buffer(this);
+	script=new QLabel(this);
+	script->setGeometry(210,600,380,100);
+	script->setAlignment(Qt::AlignCenter);
+	script->setAutoFillBackground(true);
 	setMouseTracking(true);
 	setWindowTitle(tr("QuadraticCraft"));
 	setFixedSize(800,600);
@@ -37,7 +42,7 @@ Interface::Interface(QWidget *parent):
 		auto cursor=mapFromGlobal(QCursor::pos());
 		int x=cursor.x(),y=cursor.y();
 
-		if(x<-50||x>width()+50||y<-50||y>width()+50){
+		if(x<-50||x>width()+50||y<-50||y>height()+50){
 			info->push();
 			pack->push();
 		}
@@ -48,19 +53,27 @@ Interface::Interface(QWidget *parent):
 			if(x<width()-250){
 				pack->push();
 			}
-			if(x<50){
+			if(!blocked&&x<50){
 				info->pop();
 			}
-			if(x>width()-50){
+			if(!blocked&&x>width()-50){
 				pack->pop();
 			}
 		}
 	});
 }
 
-void Interface::setSocket(Socket *socket)
+Interface::~Interface()
 {
-	this->socket=socket;
+	UserEvent event;
+	event.setUsername(info->getPlayerName());
+	event.setState(UserEvent::Logout);
+	socket->sendEvent(event,server);
+}
+
+void Interface::setSocket(Socket *_socket)
+{
+	socket=_socket;
 	connect(socket,&Socket::getPlayerEvent,[this](const PlayerEvent &e){
 		if(!e.getPosition().isNull()){
 			info->setPosition(e.getPosition());
@@ -68,7 +81,10 @@ void Interface::setSocket(Socket *socket)
 			auto curRct=buffer->getRect();
 			QRect core(QPoint(0,0),curRct.size()/=2);
 			core.moveCenter(curRct.center());
-			if(!core.contains(curPos)){
+			if(core.contains(curPos)){
+				update();
+			}
+			else{
 				QRect updated=curRct;
 				if(curPos.x()<core.left()){
 					core.moveLeft(curPos.x());
@@ -87,7 +103,7 @@ void Interface::setSocket(Socket *socket)
 				UpdateEvent updateEvent;
 				QList<QRect> rects={updated};
 				updateEvent.setRects(rects);
-				this->socket->sendEvent(updateEvent,server);
+				socket->sendEvent(updateEvent,server);
 			}
 		}
 		if(!e.getPackage().isEmpty()){
@@ -99,7 +115,78 @@ void Interface::setSocket(Socket *socket)
 		if(!e.getOccupation().isEmpty()){
 			info->setOccupation(e.getOccupation());
 		}
-		update();
+	});
+	connect(socket,&Socket::getScriptEvent,[this](const ScriptEvent &e){
+		if(!e.getDialog().isEmpty()){
+			++blocked;
+			QTimer *delay=new QTimer(this);
+			delay->setSingleShot(true);
+			Dialog *dialog=new Dialog(e.getDialog());
+			QPropertyAnimation *anime=new QPropertyAnimation(script,"pos",this);
+			anime->setEasingCurve(QEasingCurve::OutCubic);
+			anime->setDuration(500);
+			anime->setStartValue(script->pos());
+			anime->setEndValue(QPoint(script->pos().x(),height()-100));
+			anime->start();
+			connect(anime,&QPropertyAnimation::finished,[=]{
+				if(dialog->isEmpty()){
+					delete dialog;
+					--blocked;
+				}
+				else{
+					delay->start(0);
+				}
+			});
+			connect(delay,&QTimer::timeout,[=](){
+				if(dialog->isEmpty()){
+					delay->deleteLater();
+					anime->setDuration(500);
+					anime->setStartValue(script->pos());
+					anime->setEndValue(QPoint(script->pos().x(),height()));
+					anime->start();
+				}
+				else{
+					const auto &cur=dialog->takeFirst();
+					script->setText(cur.first);
+					delay->start(cur.second);
+				}
+			});
+		}
+		if(!e.getMotion().isEmpty()){
+			++blocked;
+			QTimer *delay=new QTimer(this);
+			delay->start(100);
+			Track *motion=new Track(e.getMotion());
+			connect(delay,&QTimer::timeout,[=](){
+				if(motion->isEmpty()){
+					delay->deleteLater();
+					delete motion;
+					--blocked;
+				}
+				else{
+					auto &cur=motion->first();
+					if(cur.second>0){
+						cur.second-=100;
+						PlayerEvent playerEvent;
+						QPoint c=info->getPosition();
+						QPoint m=cur.first.p2()-c;
+						if(!m.isNull()){
+							if(qAbs(m.x())>qAbs(m.y())){
+								m=m.x()>0?QPoint(1,0):QPoint(-1,0);
+							}
+							else{
+								m=m.y()>0?QPoint(0,1):QPoint(0,-1);
+							}
+							playerEvent.setPosition(c+m);
+							socket->sendEvent(playerEvent,server);
+						}
+					}
+					else{
+						motion->removeFirst();
+					}
+				}
+			});
+		}
 	});
 	connect(socket,&Socket::getUpdateEvent,[this](const UpdateEvent &e){
 		buffer->setBitmap(e.getBitmap(),e.getRects());
@@ -132,7 +219,7 @@ void Interface::resizeEvent(QResizeEvent *e)
 
 void Interface::keyPressEvent(QKeyEvent *e)
 {
-	keyState[e->key()]=true;
+	keyState[e->key()]=blocked?false:true;
 }
 
 void Interface::keyReleaseEvent(QKeyEvent *e)
@@ -142,7 +229,7 @@ void Interface::keyReleaseEvent(QKeyEvent *e)
 
 void Interface::mouseReleaseEvent(QMouseEvent *e)
 {
-	if(!info->isPopped()&&!pack->isPopped()){
+	if(!info->isPopped()&&!pack->isPopped()&&!blocked){
 		ItemEvent itemEvent;
 		QPoint click=e->pos();
 		click=buffer->getRect().topLeft()+QPoint(click.x()/50,click.y()/50);

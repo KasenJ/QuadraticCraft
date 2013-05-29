@@ -24,6 +24,11 @@ void Socket::readData()
 			emit getPlayerEvent(event,address);
 			break;
 		}
+		case Event::Script:{
+			ScriptEvent event(data);
+			emit getScriptEvent(event,address);
+			break;
+		}
 		case Event::Update:{
 			UpdateEvent event(data);
 			emit getUpdateEvent(event,address);

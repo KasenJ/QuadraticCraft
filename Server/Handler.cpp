@@ -7,6 +7,12 @@ Handler::Handler(QObject *parent):
 	data.setDatabaseName("Data.db");
 	data.open();
 	QSqlQuery().exec("PRAGMA synchronous = OFF;");
+	QSqlQuery().exec("PRAGMA foreign_keys = ON;");
+	QSqlQuery query(data);
+	query.exec("SELECT * FROM Access");
+	while(query.next()) access.insert(query.value("Type").toInt(),query.value("Control").toBool());
+	query.exec("SELECT * FROM Event");
+	while(query.next()) events.append(QPair<QRect,ScriptEvent>(query.value("Rect").toRect(),query.value("Script").toByteArray()));
 }
 
 Handler::~Handler()

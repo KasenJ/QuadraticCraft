@@ -5,20 +5,20 @@ Login::Login(QWidget *parent) :
 {
 	setFixedSize(400,300);
 	setWindowTitle(tr("Login"));
-	QDialogButtonBox *button=new QDialogButtonBox(this);
-	button->setStandardButtons(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
-	button->setGeometry(140,225,120,60);
-	QLineEdit *address=new QLineEdit(this);
+	address=new QLineEdit(this);
 	address->setGeometry(100,120,200,20);
 	address->setPlaceholderText(tr("Server IP"));
-	QLineEdit *username=new QLineEdit(this);
+	username=new QLineEdit(this);
 	username->setGeometry(100,160,200,20);
 	username->setPlaceholderText(tr("Username"));
-	QLineEdit *password=new QLineEdit(this);
+	password=new QLineEdit(this);
 	password->setGeometry(100,200,200,20);
 	password->setEchoMode(QLineEdit::Password);
 	password->setPlaceholderText(tr("Password"));
-	connect(button,&QDialogButtonBox::accepted,[=](){
+	button=new QDialogButtonBox(this);
+	button->setStandardButtons(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
+	button->setGeometry(140,225,120,60);
+	connect(button,&QDialogButtonBox::accepted,[this](){
 		server.setAddress(address->text());
 		UserEvent event;
 		event.setState(UserEvent::Login);
@@ -28,18 +28,17 @@ Login::Login(QWidget *parent) :
 		QTimer *timer=new QTimer(this);
 		timer->setSingleShot(true);
 		timer->start(1000);
-		connect(timer,&QTimer::timeout,[=](){
+		connect(timer,&QTimer::timeout,[this](){
 			address->setPlaceholderText(tr("Connection Failed"));
 			address->setText(QString());
 			server.clear();
 		});
-		connect(socket,&Socket::getUserEvent,[=](const UserEvent &event){
+		connect(socket,&Socket::getUserEvent,[this,timer](const UserEvent &event){
+			timer->stop();
 			if(event.getState()==UserEvent::Logged){
-				timer->stop();
 				accept();
 			}
 			else{
-				timer->stop();
 				password->setPlaceholderText(tr("Wrong Password"));
 				password->setText(QString());
 			}

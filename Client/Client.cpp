@@ -25,21 +25,17 @@ int main(int argc, char *argv[])
 	Socket socket;
 	socket.setSendPort(12450);
 	socket.setReceivePort(45012);
-	int state=0;
-	while(state==0){
-		Login login;
-		login.setSocket(&socket);
-		login.show();
-		Interface interface;
-		interface.setSocket(&socket);
-		if(login.exec()==QDialog::Accepted){
-			interface.setServer(login.getServer());
-			interface.show();
-			state=a.exec();
-		}
-		else{
-			state=-1;
-		}
+	Login login;
+	login.setSocket(&socket);
+	login.show();
+	Interface interface;
+	interface.setSocket(&socket);
+	if(login.exec()==QDialog::Accepted){
+		interface.setServer(login.getServer());
+		interface.show();
+		return a.exec();
 	}
-	return state>=0?state:0;
+	else{
+		return 0;
+	}
 }
