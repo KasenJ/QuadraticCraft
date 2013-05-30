@@ -11,7 +11,6 @@ class Info:public QWidget
 	Q_OBJECT
 public:
 	explicit Info(QWidget *parent=0);
-	void draw(QPainter *painter,QRect rect);
 	bool isPopped(){return isPop;}
 	inline const QPoint &getPosition() const {return current;}
 	inline const QString getPlayerName() const {return playerE->text();}

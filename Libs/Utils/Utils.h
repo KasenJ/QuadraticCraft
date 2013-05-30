@@ -25,6 +25,16 @@ inline T fromByteArray(const QByteArray &d)
 	s>>t;
 	return t;
 }
+
+template<class Func>
+void delayExec(int time,Func func)
+{
+	QTimer *delay=new QTimer;
+	delay->setSingleShot(true);
+	delay->start(time);
+	delay->connect(delay,&QTimer::timeout,func);
+	delay->connect(delay,&QTimer::timeout,[delay]{delay->deleteLater();});
+}
 }
 
 #endif // UTILS_H

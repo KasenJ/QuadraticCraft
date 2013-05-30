@@ -34,6 +34,19 @@ void Handler::PlayerEventHandle(const PlayerEvent &event,const QHostAddress &add
 		query.addBindValue(userMap[address]);
 		query.exec();
 		reply.setPosition(event.getPosition());
+		UpdateEvent update;
+		QList<Role> roles;
+		query.prepare("SELECT Occupation,Position FROM Player;");
+		query.exec();
+		while(query.next()){
+			auto b=Bit::White;
+			auto p=Utils::toPoint(query.value("Position").toInt());
+			roles.append(Role(b,p));
+		}
+		update.setRoles(roles);
+		for(QHostAddress a:userMap.keys()){
+			sendEvent(update,a);
+		}
 	}
 	else{
 		qDebug()<<"Can Not Move To This Position";

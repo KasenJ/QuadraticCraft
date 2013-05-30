@@ -13,13 +13,19 @@ public:
 	explicit Buffer(QObject *parent=NULL);
 	void draw(QPainter *painter);
 	const QRect &getRect() const {return rect;}
+	QList<QRect> takeBlank();
 	
 private:
 	QRect rect;
+	QRect buff;
+	QList<Role> roles;
+	QList<QRect> blank;
 	QVector<BitType> bitmap;
 
 public slots:
-	void setRect(const QRect &rect);
+	void setRect(const QRect &_rect);
+	void setRoles(const QList<Role> &_roles);
+	void setBitmap(const QVector<BitType> &_bitmap,const QRect &_rect);
 	void setBitmap(const QVector<BitType> &_bitmap,const QList<QRect> &_rects);
 };
 

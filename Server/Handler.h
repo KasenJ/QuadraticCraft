@@ -19,8 +19,9 @@ private:
 	QSqlDatabase data;
 	QHash<QHostAddress,QString> userMap;
 	QHash<BitType,bool> access;
-	QList< QPair<QRect,ScriptEvent> > events;
-	inline void sendEvent(const Event &event,const QHostAddress &address){socket->sendEvent(event,address);}
+	QList<QPair<QRect,ScriptEvent> > events;
+	void sendEvent(const Event &event,const QHostAddress &address);
+	void broadEvent(const Event &event);
 
 public slots:
 	void ItemEventHandle(const ItemEvent &event,const QHostAddress &address);

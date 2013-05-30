@@ -42,13 +42,9 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 			query.exec();
 
 			UpdateEvent broad;
-			QList<QRect> rects={QRect(event.getPoint(),QSize(1,1))};
-			QVector<BitType> bitmap={static_cast<BitType>(type)};
-			broad.setRects(rects);
-			broad.setBitmap(bitmap);
-			for(auto user:userMap.keys()){
-				sendEvent(broad,user);
-			}
+			broad.setRect(QRect(event.getPoint(),QSize(1,1)));
+			broad.setBitmap(QVector<BitType>(1,type));
+			broadEvent(broad);
 		}
 		else{
 			qDebug()<<"No such item in Cube";
@@ -94,13 +90,9 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 				sendEvent(reply,address);
 
 				UpdateEvent broad;
-				QList<QRect> rects={QRect(event.getPoint(),QSize(1,1))};
-				QVector<BitType> bitmap={static_cast<BitType>(_type)};
-				broad.setRects(rects);
-				broad.setBitmap(bitmap);
-				for(auto user:userMap.keys()){
-					sendEvent(broad,user);
-				}
+				broad.setRect(QRect(event.getPoint(),QSize(1,1)));
+				broad.setBitmap(QVector<BitType>(1,_type));
+				broadEvent(broad);
 			}
 			else{
 				qDebug()<<"No Space To Drop";
@@ -162,7 +154,8 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 							query.addBindValue(userMap[address]);
 							query.addBindValue(c[i].first);
 							query.exec();
-						}else{
+						}
+						else{
 							query.prepare("UPDATE Cell SET Number=? WHERE PName=? And Item=? ");
 							query.addBindValue(temp-min);
 							query.addBindValue(userMap[address]);
@@ -182,7 +175,8 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 						query.addBindValue(userMap[address]);
 						query.addBindValue(pro);
 						query.exec();
-					}else{
+					}
+					else{
 						query.prepare("INSERT INTO Cell Values(?,?,?)");
 						query.addBindValue(userMap[address]);
 						query.addBindValue(pro);

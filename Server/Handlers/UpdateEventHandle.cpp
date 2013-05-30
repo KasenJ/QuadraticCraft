@@ -20,7 +20,8 @@ void Handler::UpdateEventHandle(const UpdateEvent &event,const QHostAddress &add
 		}
 		bitmap+=bits;
 	}
-	UpdateEvent reply=event;
+	UpdateEvent reply;
+	reply.setRects(event.getRects());
 	reply.setBitmap(bitmap);
 	sendEvent(reply,address);
 }

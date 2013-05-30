@@ -36,7 +36,7 @@ Interface::Interface(QWidget *parent):
 		if(!move.isNull()){
 			PlayerEvent playerEvent;
 			playerEvent.setPosition(info->getPosition()+move);
-			socket->sendEvent(playerEvent,server);
+			sendEvent(playerEvent);
 		}
 
 		auto cursor=mapFromGlobal(QCursor::pos());
@@ -68,7 +68,7 @@ Interface::~Interface()
 	UserEvent event;
 	event.setUsername(info->getPlayerName());
 	event.setState(UserEvent::Logout);
-	socket->sendEvent(event,server);
+	sendEvent(event);
 }
 
 void Interface::setSocket(Socket *_socket)
@@ -79,31 +79,36 @@ void Interface::setSocket(Socket *_socket)
 			info->setPosition(e.getPosition());
 			auto curPos=info->getPosition();
 			auto curRct=buffer->getRect();
-			QRect core(QPoint(0,0),curRct.size()/=2);
-			core.moveCenter(curRct.center());
-			if(core.contains(curPos)){
-				update();
+			if(curRct.isNull()){
+				curRct=QRect(0,0,16,12);
+				curRct.moveCenter(curPos);
+				buffer->setRect(curRct);
 			}
 			else{
-				QRect updated=curRct;
-				if(curPos.x()<core.left()){
-					core.moveLeft(curPos.x());
+				QRect core(QPoint(0,0),curRct.size()/=2);
+				core.moveCenter(curRct.center());
+				if(!core.contains(curPos)){
+					QRect updated=curRct;
+					if(curPos.x()<core.left()){
+						core.moveLeft(curPos.x());
+					}
+					if(curPos.x()>core.right()){
+						core.moveRight(curPos.x());
+					}
+					if(curPos.y()<core.top()){
+						core.moveTop(curPos.y());
+					}
+					if(curPos.y()>core.bottom()){
+						core.moveBottom(curPos.y());
+					}
+					updated.moveCenter(core.center());
+					buffer->setRect(updated);
 				}
-				if(curPos.x()>core.right()){
-					core.moveRight(curPos.x());
-				}
-				if(curPos.y()<core.top()){
-					core.moveTop(curPos.y());
-				}
-				if(curPos.y()>core.bottom()){
-					core.moveBottom(curPos.y());
-				}
-				updated.moveCenter(core.center());
-				buffer->setRect(updated);
-				UpdateEvent updateEvent;
-				QList<QRect> rects={updated};
-				updateEvent.setRects(rects);
-				socket->sendEvent(updateEvent,server);
+			}
+			UpdateEvent update;
+			update.setRects(buffer->takeBlank());
+			if(!update.getRects().isEmpty()){
+				sendEvent(update);
 			}
 		}
 		if(!e.getPackage().isEmpty()){
@@ -178,7 +183,7 @@ void Interface::setSocket(Socket *_socket)
 								m=m.y()>0?QPoint(0,1):QPoint(0,-1);
 							}
 							playerEvent.setPosition(c+m);
-							socket->sendEvent(playerEvent,server);
+							sendEvent(playerEvent);
 						}
 					}
 					else{
@@ -189,7 +194,12 @@ void Interface::setSocket(Socket *_socket)
 		}
 	});
 	connect(socket,&Socket::getUpdateEvent,[this](const UpdateEvent &e){
-		buffer->setBitmap(e.getBitmap(),e.getRects());
+		if(!e.getRoles().isEmpty()){
+			buffer->setRoles(e.getRoles());
+		}
+		if(!e.getBitmap().isEmpty()&&!e.getRects().isEmpty()){
+			buffer->setBitmap(e.getBitmap(),e.getRects());
+		}
 		update();
 	});
 }
@@ -204,7 +214,6 @@ void Interface::paintEvent(QPaintEvent *e)
 	QPainter painter;
 	painter.begin(this);
 	buffer->draw(&painter);
-	info->draw(&painter,buffer->getRect());
 	painter.end();
 	QWidget::paintEvent(e);
 }
@@ -244,6 +253,6 @@ void Interface::mouseReleaseEvent(QMouseEvent *e)
 		if(e->button()==Qt::LeftButton){
 			itemEvent.setOperation(ItemEvent::Get);
 		}
-		socket->sendEvent(itemEvent,server);
+		sendEvent(itemEvent);
 	}
 }
