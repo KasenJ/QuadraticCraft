@@ -18,11 +18,13 @@ private:
 	Socket *socket;
 	QSqlDatabase data;
 	QHash<QHostAddress,QString> userMap;
-	inline void sendEvent(const Event &event,const QHostAddress &address){socket->sendEvent(event,address);}
+	QHash<BitType,bool> access;
+	QList<QPair<QRect,ScriptEvent> > events;
+	void sendEvent(const Event &event,const QHostAddress &address);
+	void broadEvent(const Event &event);
 
 public slots:
-	void DropEventHandle(const DropEvent &event,const QHostAddress &address);
-	void GetEventHandle(const GetEvent &event,const QHostAddress &address);
+	void ItemEventHandle(const ItemEvent &event,const QHostAddress &address);
 	void PlayerEventHandle(const PlayerEvent &event,const QHostAddress &address);
 	void UpdateEventHandle(const UpdateEvent &event,const QHostAddress &address);
 	void UserEventHandle(const UserEvent &event,const QHostAddress &address);

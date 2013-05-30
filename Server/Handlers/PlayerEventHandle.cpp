@@ -10,8 +10,21 @@ void Handler::PlayerEventHandle(const PlayerEvent &event,const QHostAddress &add
 	bool reach=query.first();
 	if(reach){
 		int type=query.value("Type").toInt();
-		if(type==0){
-			reach=false;
+		reach=access[type];
+	}
+	if(reach){
+		for(auto iter=events.begin();iter!=events.end();){
+			if(iter->first.contains(event.getPosition())){
+				ScriptEvent replyScr=iter->second;
+				query.prepare("DELETE FROM Event WHERE Rect=?");
+				query.addBindValue(Utils::toByteArray(iter->first));
+				query.exec();
+				iter=events.erase(iter);
+				sendEvent(replyScr,address);
+			}
+			else{
+				++iter;
+			}
 		}
 	}
 	PlayerEvent reply;
@@ -21,6 +34,19 @@ void Handler::PlayerEventHandle(const PlayerEvent &event,const QHostAddress &add
 		query.addBindValue(userMap[address]);
 		query.exec();
 		reply.setPosition(event.getPosition());
+		UpdateEvent update;
+		QList<Role> roles;
+		query.prepare("SELECT Occupation,Position FROM Player;");
+		query.exec();
+		while(query.next()){
+			auto b=Bit::White;
+			auto p=Utils::toPoint(query.value("Position").toInt());
+			roles.append(Role(b,p));
+		}
+		update.setRoles(roles);
+		for(QHostAddress a:userMap.keys()){
+			sendEvent(update,a);
+		}
 	}
 	else{
 		qDebug()<<"Can Not Move To This Position";
@@ -53,7 +79,6 @@ void Handler::PlayerEventHandle(const PlayerEvent &event,const QHostAddress &add
 			query.exec();
 		}
 		if(flag){
-			qDebug()<<"Update Item"<<it.first<<"Succeed";
 			change.append(it);
 		}
 		else{

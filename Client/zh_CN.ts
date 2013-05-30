@@ -2,11 +2,29 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="zh_CN">
 <context>
+    <name>Info</name>
+    <message>
+        <location filename="Info.cpp" line="17"/>
+        <source>Player</source>
+        <translation>玩家</translation>
+    </message>
+    <message>
+        <location filename="Info.cpp" line="23"/>
+        <source>Occupation</source>
+        <translation>职业</translation>
+    </message>
+    <message>
+        <location filename="Info.cpp" line="29"/>
+        <source>Position</source>
+        <translation>位置</translation>
+    </message>
+</context>
+<context>
     <name>Interface</name>
     <message>
-        <location filename="Interface.cpp" line="7"/>
+        <location filename="Interface.cpp" line="12"/>
         <source>QuadraticCraft</source>
-        <translation type="unfinished"></translation>
+        <translation>QuadraticCraft</translation>
     </message>
 </context>
 <context>

@@ -23,17 +23,26 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 		}
 		else{
 			qDebug()<<"Init Player Info";
-			query.prepare("INSERT INTO Player VALUES (?,?,?,?,?)");
-			query.addBindValue(event.getUsername());
-			query.addBindValue("Undefined");
-			query.addBindValue("Undefined");
-			query.addBindValue(event.getPassword());
-			query.addBindValue(qrand()%(0xFFFFFFFF>>1));
-			if(query.exec()){
-				qDebug()<<"Init Succeed";
-				reply.setState(UserEvent::Logged);
+			bool flag=false;
+			query.prepare("SELECT Data FROM Info WHERE Name=?");
+			query.addBindValue("Rect");
+			query.exec();
+			if(query.first()){
+				QRect w=Utils::fromByteArray<QRect>(query.value("Data").toByteArray());
+				qsrand(QTime::currentTime().msec());
+				query.prepare("INSERT INTO Player VALUES (?,?,?,?,?)");
+				query.addBindValue(event.getUsername());
+				query.addBindValue("Undefined");
+				query.addBindValue("Undefined");
+				query.addBindValue(event.getPassword());
+				query.addBindValue(Utils::toInt(w.topLeft()+QPoint(qrand()%w.width(),qrand()%w.height())));
+				if(query.exec()){
+					qDebug()<<"Init Succeed";
+					reply.setState(UserEvent::Logged);
+					flag=true;
+				}
 			}
-			else{
+			if(!flag){
 				qDebug()<<"Init Failed";
 				reply.setState(UserEvent::Failed);
 			}
@@ -56,37 +65,40 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 				query.exec();
 				Package initPackage;
 				while(query.next()){
-					auto cell=qMakePair(query.value("Item").value<BitType>(),query.value("Number").value<qint8>());
+					Cell cell(query.value("Item").toInt(),query.value("Number").toInt());
 					initPackage.append(cell);
 				}
 				initPlayer.setPackege(initPackage);
 				initPlayer.setName(userMap[address]);
-				sendEvent(initPlayer,address);
 
 				UpdateEvent initUpdate;
-				QRect initRect(0,0,16,12);
-				initRect.moveCenter(initPoint);
-				int x=initRect.x(),y=initRect.y(),w=16,h=12;
-				QVector<BitType> initBitmap(w*h,Bit::Black);
-				for(int i=0;i<w;i++){
-					query.prepare("SELECT Type,Position FROM Cube WHERE Position>=? AND Position<?");
-					query.addBindValue(Utils::toInt(QPoint(x+i,y)));
-					query.addBindValue(Utils::toInt(QPoint(x+i,y+h)));
-					query.exec();
-					while(query.next()){
-						QPoint point=Utils::toPoint(query.value("Position").toInt());
-						initBitmap[(point.y()-y)*w+point.x()-x]=query.value("Type").toInt();
-					}
+				QList<Role> initRoles;
+				query.prepare("SELECT Occupation,Position FROM Player;");
+				query.exec();
+				while(query.next()){
+					auto b=Bit::White;
+					auto p=Utils::toPoint(query.value("Position").toInt());
+					initRoles.append(Role(b,p));
 				}
-				initUpdate.setRect(initRect);
-				initUpdate.setBitmap(initBitmap);
-				sendEvent(initUpdate,address);
+				initUpdate.setRoles(initRoles);
+
+				Utils::delayExec(500,[=](){
+					sendEvent(initPlayer,address);
+					sendEvent(initUpdate,address);
+				});
 			}
 		}
 		else{
 			qDebug()<<"User"<<event.getUsername()<<"Failed";
 		}
 		sendEvent(reply,address);
+		break;
+	}
+	case UserEvent::Logout:
+	{
+		userMap.remove(address);
+		qDebug()<<"User"<<event.getUsername()<<"Logout";
+		break;
 	}
 	}
 }

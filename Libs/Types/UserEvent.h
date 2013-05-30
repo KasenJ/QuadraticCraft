@@ -16,7 +16,7 @@ private:
 	QString password;
 
 public:
-	enum{Login,Logged,Failed,Logout,Modify};
+	enum{Login,Logged,Failed,Logout};
 
 	UserEvent(const QByteArray &data=QByteArray())
 	{

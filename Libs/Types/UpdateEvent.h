@@ -8,10 +8,13 @@
 #include "Bit.h"
 #include "Event.h"
 
+typedef QPair<BitType,QPoint> Role;
+
 class UpdateEvent:public Event
 {
 private:
-	QRect rect;
+	QList<Role> roles;
+	QList<QRect> rects;
 	QVector<BitType> bitmap;
 
 public:
@@ -22,7 +25,7 @@ public:
 			EventType type;
 			stream>>type;
 			if(type==Update){
-				stream>>rect>>bitmap;
+				stream>>roles>>rects>>bitmap;
 			}
 		}
 	}
@@ -32,18 +35,20 @@ public:
 		QByteArray data;
 		QDataStream stream(&data,QIODevice::WriteOnly);
 		EventType type=Update;
-		stream<<type<<rect<<bitmap;
+		stream<<type<<roles<<rects<<bitmap;
 		return data;
 	}
 
-	inline const QRect &getRect() const {return rect;}
-	inline void setRect(const QRect &rect){this->rect=rect;}
+	inline const QList<Role> &getRoles() const {return roles;}
+	inline void setRoles(QList<Role> &roles){this->roles=roles;}
+
+	inline const QList<QRect> &getRects() const {return rects;}
+	inline void setRect(const QRect &rect){rects.clear();rects.append(rect);}
+	inline void setRects(const QList<QRect> &rects){this->rects=rects;}
 
 	inline const QVector<BitType> &getBitmap() const {return bitmap;}
 	inline void setBitmap(const QVector<BitType> &bitmap){this->bitmap=bitmap;}
 
-	inline bool isEmpty() const {return bitmap.isEmpty();}
-	inline bool isValid() const {return bitmap.size()==rect.width()*rect.height();}
 };
 
 #endif // UPDATEEVENT_H

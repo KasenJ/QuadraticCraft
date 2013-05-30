@@ -7,37 +7,28 @@ Info::Info(QWidget *parent) :
 {
 	isPop=false;
 	setAutoFillBackground(true);
-	QPalette options;
-	options.setColor(QPalette::Background,Qt::white);
-	setPalette(options);
 	animation=new QPropertyAnimation(this,"pos",this);
 	animation->setDuration(200);
 	animation->setEasingCurve(QEasingCurve::OutCubic);
 
-	playerL=new QLabel("Player",this);
+	playerL=new QLabel(tr("Player"),this);
 	playerL->setGeometry(QRect(10,25, 120,25));
 	playerE=new QLineEdit(this);
 	playerE->setReadOnly(true);
 	playerE->setGeometry(QRect(10,60, 120,25));
 
-	occuptL=new QLabel("Occupation",this);
+	occuptL=new QLabel(tr("Occupation"),this);
 	occuptL->setGeometry(QRect(10,105, 120,25));
 	occuptE=new QLineEdit(this);
 	occuptE->setReadOnly(true);
 	occuptE->setGeometry(QRect(10,140, 120,25));
 
-	pstionL=new QLabel("Position",this);
+	pstionL=new QLabel(tr("Position"),this);
 	pstionL->setGeometry(QRect(10,185, 120,25));
 	pstionE=new QLineEdit(this);
 	pstionE->setReadOnly(true);
 	pstionE->setGeometry(QRect(10,220, 120,25));
 
-}
-
-void Info::draw(QPainter *painter,QRect rect)
-{
-	QPoint trans(current.x()-rect.x(),current.y()-rect.y());
-	painter->drawPixmap(trans.x()*50,trans.y()*50,square->at(0));
 }
 
 void Info::pop()
