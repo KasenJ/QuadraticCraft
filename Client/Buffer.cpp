@@ -22,19 +22,13 @@ void Buffer::draw(QPainter *painter)
 	}
 }
 
-QList<QRect> Buffer::takeBlank()
-{
-	QList<QRect> rects=blank;
-	blank.clear();
-	return rects;
-}
-
 void Buffer::setRect(const QRect &_rect)
 {
+	QList<QRect> b;
 	if(rect.isNull()){
 		rect=_rect;
 		buff=QRect(rect.topLeft()-QPoint(10,10),rect.bottomRight()+QPoint(10,10));
-		blank.append(buff);
+		b.append(buff);
 		bitmap.fill(Bit::Black,buff.width()*buff.height());
 	}
 	else{
@@ -42,19 +36,19 @@ void Buffer::setRect(const QRect &_rect)
 		QRect _buff=buff;
 		if(rect.left()-2<buff.left()){
 			buff.moveLeft(buff.left()-8);
-			blank.append(QRect(QPoint(buff.left(),buff.top()),QPoint(_buff.left(),buff.bottom())));
+			b.append(QRect(QPoint(buff.left(),buff.top()),QPoint(_buff.left(),buff.bottom())));
 		}
 		if(rect.right()+2>buff.right()){
 			buff.moveRight(buff.right()+8);
-			blank.append(QRect(QPoint(_buff.right(),buff.top()),QPoint(buff.right(),buff.bottom())));
+			b.append(QRect(QPoint(_buff.right(),buff.top()),QPoint(buff.right(),buff.bottom())));
 		}
 		if(rect.top()-2<buff.top()){
 			buff.moveTop(buff.top()-8);
-			blank.append(QRect(QPoint(buff.left(),buff.top()),QPoint(buff.right(),_buff.top())));
+			b.append(QRect(QPoint(buff.left(),buff.top()),QPoint(buff.right(),_buff.top())));
 		}
 		if(rect.bottom()+2>buff.bottom()){
 			buff.moveBottom(buff.bottom()+8);
-			blank.append(QRect(QPoint(buff.left(),_buff.bottom()),QPoint(buff.right(),buff.bottom())));
+			b.append(QRect(QPoint(buff.left(),_buff.bottom()),QPoint(buff.right(),buff.bottom())));
 		}
 		if(buff!=_buff){
 			QVector<BitType> _bitmap(bitmap);
@@ -62,6 +56,9 @@ void Buffer::setRect(const QRect &_rect)
 			bitmap.fill(Bit::Black);
 			setBitmap(_bitmap,_buff);
 		}
+	}
+	if(!b.isEmpty()){
+		emit blank(b);
 	}
 }
 

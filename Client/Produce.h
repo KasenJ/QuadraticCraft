@@ -4,18 +4,24 @@
 #include <QtCore>
 #include <QtWidgets>
 #include "Types.h"
+#include "Square.h"
 
-class Produce:public QWidget
+class Produce:public QFrame
 {
 	Q_OBJECT
 public:
 	explicit Produce(QWidget *parent=0);
-	const Package &getPackage();
 
 private:
 	Package items;
+	QList<int> count;
 	void dropEvent(QDropEvent *e);
+	void paintEvent(QPaintEvent *e);
+	void wheelEvent(QWheelEvent *e);
 	void dragEnterEvent(QDragEnterEvent *e);
+
+signals:
+	void produce(Package);
 	
 };
 

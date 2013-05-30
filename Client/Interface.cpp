@@ -61,6 +61,17 @@ Interface::Interface(QWidget *parent):
 			}
 		}
 	});
+	connect(pack,&Pack::send,[this](Package c){
+		ItemEvent produce;
+		produce.setOperation(ItemEvent::Produce);
+		produce.setPackege(c);
+		sendEvent(produce);
+	});
+	connect(buffer,&Buffer::blank,[this](QList<QRect> b){
+		UpdateEvent update;
+		update.setRects(b);
+		sendEvent(update);
+	});
 }
 
 Interface::~Interface()
@@ -104,11 +115,6 @@ void Interface::setSocket(Socket *_socket)
 					updated.moveCenter(core.center());
 					buffer->setRect(updated);
 				}
-			}
-			UpdateEvent update;
-			update.setRects(buffer->takeBlank());
-			if(!update.getRects().isEmpty()){
-				sendEvent(update);
 			}
 		}
 		if(!e.getPackage().isEmpty()){

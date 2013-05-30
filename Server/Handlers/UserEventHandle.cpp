@@ -29,7 +29,6 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 			query.exec();
 			if(query.first()){
 				QRect w=Utils::fromByteArray<QRect>(query.value("Data").toByteArray());
-				qDebug()<<w;
 				qsrand(QTime::currentTime().msec());
 				query.prepare("INSERT INTO Player VALUES (?,?,?,?,?)");
 				query.addBindValue(event.getUsername());
@@ -83,7 +82,7 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 				}
 				initUpdate.setRoles(initRoles);
 
-				Utils::delayExec(0,[=](){
+				Utils::delayExec(500,[=](){
 					sendEvent(initPlayer,address);
 					sendEvent(initUpdate,address);
 				});
