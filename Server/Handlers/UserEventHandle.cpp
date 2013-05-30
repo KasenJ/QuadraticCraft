@@ -83,7 +83,7 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 				}
 				initUpdate.setRoles(initRoles);
 
-				Utils::delayExec(1000,[=](){
+				Utils::delayExec(0,[=](){
 					sendEvent(initPlayer,address);
 					sendEvent(initUpdate,address);
 				});

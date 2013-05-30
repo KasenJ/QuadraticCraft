@@ -5,11 +5,28 @@
 
 namespace Utils
 {
-inline int toInt(QPoint point){return (point.x()<<16)+point.y();}
-inline QPoint toPoint(int point){return QPoint(point>>16,point&0xFFFF);}
+inline int toInt(QPoint point)
+{
+	return (point.x()<<16)+point.y();
+}
+
+inline QPoint toPoint(int point){
+	return QPoint(point>>16,point&0xFFFF);
+}
+
+inline int toInt(const QPoint &p,const QRect &r)
+{
+	QPoint t=p-r.topLeft();
+	return t.x()+t.y()*r.width();
+}
+
+inline QPoint toPoint(int p,const QRect &r)
+{
+	return QPoint(p%r.width(),p/r.width());
+}
 
 template <class T>
-inline QByteArray toByteArray(const T &t)
+QByteArray toByteArray(const T &t)
 {
 	QByteArray d;
 	QDataStream s(&d,QIODevice::WriteOnly);
@@ -18,7 +35,7 @@ inline QByteArray toByteArray(const T &t)
 }
 
 template <class T>
-inline T fromByteArray(const QByteArray &d)
+T fromByteArray(const QByteArray &d)
 {
 	QDataStream s(d);
 	T t;
