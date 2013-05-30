@@ -10,14 +10,34 @@ Handler::Handler(QObject *parent):
 	QSqlQuery().exec("PRAGMA foreign_keys = ON;");
 	QSqlQuery query(data);
 	query.exec("SELECT * FROM Access");
-	while(query.next()) access.insert(query.value("Type").toInt(),query.value("Control").toBool());
+	while(query.next()){
+		const auto &t=query.value("Type").toInt();
+		const auto &c=query.value("Control").toBool();
+		access.insert(t,c);
+	}
 	query.exec("SELECT * FROM Event");
-	while(query.next()) events.append(QPair<QRect,ScriptEvent>(query.value("Rect").toRect(),query.value("Script").toByteArray()));
+	while(query.next()){
+		const auto &r=Utils::fromByteArray<QRect>(query.value("Rect").toByteArray());
+		const auto &e=ScriptEvent(query.value("Script").toByteArray());
+		events.append(qMakePair(r,e));
+	}
 }
 
 Handler::~Handler()
 {
 	data.close();
+}
+
+void Handler::sendEvent(const Event &event,const QHostAddress &address)
+{
+	socket->sendEvent(event,address);
+}
+
+void Handler::broadEvent(const Event &event)
+{
+	for(const QHostAddress &user:userMap.keys()){
+		sendEvent(event,user);
+	}
 }
 
 void Handler::setSocket(Socket *socket)

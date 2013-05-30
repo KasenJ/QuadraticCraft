@@ -19,6 +19,7 @@ public:
 	~Interface();
 	void setSocket(Socket *_socket);
 	void setServer(const QHostAddress &server);
+	void sendEvent(const Event &event){socket->sendEvent(event,server);}
 
 private:
 	int blocked;

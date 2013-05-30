@@ -16,10 +16,17 @@ public:
 	
 private:
 	QRect rect;
+	QRect buff;
+	QList<Role> roles;
 	QVector<BitType> bitmap;
 
+signals:
+	void blank(QList<QRect>);
+
 public slots:
-	void setRect(const QRect &rect);
+	void setRect(const QRect &_rect);
+	void setRoles(const QList<Role> &_roles);
+	void setBitmap(const QVector<BitType> &_bitmap,const QRect &_rect);
 	void setBitmap(const QVector<BitType> &_bitmap,const QList<QRect> &_rects);
 };
 

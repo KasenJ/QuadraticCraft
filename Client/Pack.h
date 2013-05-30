@@ -32,6 +32,9 @@ private:
 	QRect mapRect(int i,int j) const;
 	QPoint mapPosition(int i,int j) const;
 
+signals:
+	void send(Package);
+
 public slots:
 	void pop();
 	void push();

@@ -30,6 +30,23 @@ int main()
 				query.exec();
 			}
 		}
+		query.exec("INSERT INTO Access VALUES(2,1)");
+		query.exec("INSERT INTO Access VALUES(3,1)");
+
+		ScriptEvent initScript;
+		Dialog initDialogs;
+		initDialogs.append(QPair<QString,quint32>("你想明白生命的意义吗？",2000));
+		initDialogs.append(QPair<QString,quint32>("你想真正的·······活着吗？",2000));
+		initScript.setDialog(initDialogs);
+		query.prepare("INSERT INTO Event VALUES(?,?)");
+		query.addBindValue(Utils::toByteArray(QRect(0,0,5,5)));
+		query.addBindValue(initScript.toByteArray());
+		query.exec();
+
+		query.prepare("INSERT INTO Info VALUES(?,?)");
+		query.addBindValue("Rect");
+		query.addBindValue(Utils::toByteArray(QRect(1,1,48,48)));
+		query.exec();
 		data.commit();
 		data.close();
 	}

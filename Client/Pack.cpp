@@ -12,7 +12,8 @@ Pack::Pack(QWidget *parent):
 	animation->setDuration(200);
 	animation->setEasingCurve(QEasingCurve::OutCubic);
 	produce=new Produce(this);
-	produce->setGeometry(10,300,180,290);
+	produce->setGeometry(12.5,300,175,290);
+	connect(produce,&Produce::produce,[this](Package d){emit send(d);});
 }
 
 void Pack::paintEvent(QPaintEvent *e)
@@ -137,4 +138,5 @@ void Pack::setPackage(const Package &change)
 			package.append(item);
 		}
 	}
+	update();
 }
