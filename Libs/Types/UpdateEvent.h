@@ -8,7 +8,7 @@
 #include "Event.h"
 
 typedef quint8 BitType;
-typedef quint32 SquareType;
+typedef quint64 SquareType;
 typedef QVector<SquareType> Bitmap;
 typedef QPair<BitType,QPoint> Role;
 

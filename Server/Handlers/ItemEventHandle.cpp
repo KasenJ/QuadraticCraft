@@ -12,32 +12,34 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 		query.addBindValue(Utils::toInt(event.getPoint()));
 		query.exec();
 		if(query.first()){
-			int type=query.value("Type").toInt();
+			SquareType type=query.value("Type").toULongLong();
+			BitType bit=type&0xFF;
 			query.prepare("SELECT * FROM Cell WHERE PName=? AND Item=?");
 			query.addBindValue(userMap[address]);
-			query.addBindValue(type);
+			query.addBindValue(bit);
 			query.exec();
 			if(query.first()){
 				int number=query.value("Number").toInt();
 				query.prepare("UPDATE Cell SET Number=? WHERE PName=? AND Item=?");
 				query.addBindValue(++number);
 				query.addBindValue(userMap[address]);
-				query.addBindValue(type);
+				query.addBindValue(bit);
 			}
 			else{
 				query.prepare("INSERT INTO Cell (PName,Item,Number)""VALUES(?,?,?)");
 				query.addBindValue(userMap[address]);
-				query.addBindValue(type);
+				query.addBindValue(bit);
 				query.addBindValue(1);
 			}
 			query.exec();
 			PlayerEvent reply;
-			Package change={Cell(type,1)};
+			Package change={Cell(bit,1)};
 			reply.setPackege(change);
 			sendEvent(reply,address);
 
+			type=type>>8;
 			query.prepare("UPDATE Cube SET Type=? Where Position=?");
-			query.addBindValue(type>>=8);
+			query.addBindValue(type);
 			query.addBindValue(Utils::toInt(event.getPoint()));
 			query.exec();
 
@@ -65,7 +67,7 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 			query.bindValue(0,Utils::toInt(event.getPoint()));
 			query.exec();
 			if(query.first()){
-				BitType type=query.value("Type").toInt();
+				SquareType type=query.value("Type").toULongLong();
 				if(number>=2){
 					query.prepare("UPDATE Cell SET Number=? WHERE PName=? AND Item=?");
 					query.bindValue(0,--number);
@@ -112,7 +114,7 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 		Package all;
 		while(query.next()){
 			auto i=query.value("Item").value<BitType>();
-			auto n=query.value("Number").value<qint8>();
+			auto n=query.value("Number").value<qint32>();
 			all.append(qMakePair(i,n));
 		}
 		bool flag=true;

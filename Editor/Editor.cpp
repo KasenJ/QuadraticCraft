@@ -13,13 +13,13 @@ int main(int argc,char ** argv)
 		data.open();
 		QSqlQuery query(data);
 		data.transaction();
-		query.exec("CREATE TABLE Player ( PName VARCHAR(20), Password VARCHAR(20), Occupation INTEGER, Position INTEGER, FOREIGN KEY(Position) REFERENCES Cube(Position), PRIMARY KEY(PName), UNIQUE(Position) );");
+		query.exec("CREATE TABLE Player ( PName TEXT, Password TEXT, Occupation INTEGER, Position INTEGER, FOREIGN KEY(Position) REFERENCES Cube(Position), PRIMARY KEY(PName), UNIQUE(Position) );");
 		query.exec("CREATE TABLE Cube ( Position INTEGER, Type INTEGER, PRIMARY KEY(Position) );");
-		query.exec("CREATE TABLE Cell ( PName VARCHAR(20), Item INTEGER, Number INTEGER, PRIMARY KEY(PName, Item), FOREIGN KEY(PName) REFERENCES Player(PName) ON DELETE CASCADE );");
+		query.exec("CREATE TABLE Cell ( PName TEXT, Item INTEGER, Number INTEGER, PRIMARY KEY(PName, Item), FOREIGN KEY(PName) REFERENCES Player(PName) ON DELETE CASCADE );");
 		query.exec("CREATE TABLE Bit (Type INTEGER, Move BOOL, Take Bool, Info BLOB, Texture BLOB, PRIMARY KEY(Type) );");
 		query.exec("CREATE TABLE Formula (Composition INTEGER, Product INTEGER, Occupation INTEGER, UNIQUE(Composition, Occupation));");
 		query.exec("CREATE TABLE Event (Rect BLOB, Script BLOB);");
-		query.exec("CREATE TABLE Info (Name VARCHAR(20), Data BLOB, PRIMARY KEY(Name));");
+		query.exec("CREATE TABLE Info (Name TEXT, Data BLOB, PRIMARY KEY(Name));");
 		for(int i=0;i<50;i++){
 			for(int j=0;j<50;j++){
 				query.prepare("INSERT INTO Cube VALUES(?,?)");

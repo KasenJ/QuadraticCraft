@@ -8,7 +8,7 @@
 
 typedef quint8 BitType;
 typedef quint8 Operation;
-typedef QPair<BitType,qint8> Cell;
+typedef QPair<BitType,qint32> Cell;
 typedef QList<Cell> Package;
 
 class ItemEvent:public Event
