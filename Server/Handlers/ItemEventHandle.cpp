@@ -43,7 +43,7 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 
 			UpdateEvent broad;
 			broad.setRect(QRect(event.getPoint(),QSize(1,1)));
-			broad.setBitmap(QVector<BitType>(1,type));
+			broad.setBitmap(Bitmap(1,type));
 			broadEvent(broad);
 		}
 		else{
@@ -91,7 +91,7 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 
 				UpdateEvent broad;
 				broad.setRect(QRect(event.getPoint(),QSize(1,1)));
-				broad.setBitmap(QVector<BitType>(1,_type));
+				broad.setBitmap(Bitmap(1,_type));
 				broadEvent(broad);
 			}
 			else{
@@ -136,65 +136,59 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 		if(flag){
 			PlayerEvent reply;
 			Package change;
-			query.prepare("SELECT Occupation FROM Player WHERE PName=?");
+			quint32 comp=0;
+			qint8 min=128-1;
+			for(const Cell &cell:c){
+				comp=(comp<<8)+cell.first;
+				min=min<cell.second?min:cell.second;
+			}
+			query.prepare("SELECT Product FROM Formula,Player WHERE PName=? AND Player.Occupation=Formula.Occupation And Composition=?");
 			query.addBindValue(userMap[address]);
+			query.addBindValue(comp);
 			query.exec();
 			if(query.first()){
-				QString occu=query.value("Occupation").toString();
-				quint32 comp=0;
-				qint8 min=128-1;
-				for(const Cell &cell:c){
-					comp=(comp<<8)+cell.first;
-					min=min<cell.second?min:cell.second;
-				}
-				query.prepare("SELECT Product FROM Formula WHERE Occupation=? And Composition=?");
-				query.addBindValue(occu);
-				query.addBindValue(comp);
-				query.exec();
-				if(query.first()){
-					int p=query.value("Product").toInt()&0xFF;
-					for(const Cell &item:c){
-						if(item.second==min){
-							query.prepare("DELETE FROM Cell WHERE PName=? And Item=? ");
-							query.addBindValue(userMap[address]);
-							query.addBindValue(item.first);
-							query.exec();
-						}
-						else{
-							query.prepare("UPDATE Cell SET Number=? WHERE PName=? And Item=? ");
-							query.addBindValue(item.second-min);
-							query.addBindValue(userMap[address]);
-							query.addBindValue(item.first);
-							query.exec();
-						}
-						change.append(Cell(item.first,-min));
-					}
-					int t=0;
-					for(const Cell &item:all){
-						if(item.first==p){
-							t=item.second;
-							break;
-						}
-					}
-					if(t>0){
-						query.prepare("UPDATE Cell SET Number=? FROM Cell WHERE PName=? And Item=? ");
-						query.addBindValue(t+min);
+				int p=query.value("Product").toInt()&0xFF;
+				for(const Cell &item:c){
+					if(item.second==min){
+						query.prepare("DELETE FROM Cell WHERE PName=? And Item=? ");
 						query.addBindValue(userMap[address]);
-						query.addBindValue(p);
+						query.addBindValue(item.first);
 						query.exec();
 					}
 					else{
-						query.prepare("INSERT INTO Cell VALUES(?,?,?)");
+						query.prepare("UPDATE Cell SET Number=? WHERE PName=? And Item=? ");
+						query.addBindValue(item.second-min);
 						query.addBindValue(userMap[address]);
-						query.addBindValue(p);
-						query.addBindValue(min);
+						query.addBindValue(item.first);
 						query.exec();
 					}
-					change.append(Cell(p,min));
+					change.append(Cell(item.first,-min));
+				}
+				int t=0;
+				for(const Cell &item:all){
+					if(item.first==p){
+						t=item.second;
+						break;
+					}
+				}
+				if(t>0){
+					query.prepare("UPDATE Cell SET Number=? WHERE PName=? And Item=? ");
+					query.addBindValue(t+min);
+					query.addBindValue(userMap[address]);
+					query.addBindValue(p);
+					query.exec();
 				}
 				else{
-					qDebug()<<"No Such Formula";
+					query.prepare("INSERT INTO Cell VALUES(?,?,?)");
+					query.addBindValue(userMap[address]);
+					query.addBindValue(p);
+					query.addBindValue(min);
+					query.exec();
 				}
+				change.append(Cell(p,min));
+			}
+			else{
+				qDebug()<<"No Such Formula";
 			}
 			reply.setPackege(change);
 			sendEvent(reply,address);

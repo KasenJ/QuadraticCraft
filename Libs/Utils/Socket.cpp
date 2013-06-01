@@ -39,6 +39,11 @@ void Socket::readData()
 			emit getUserEvent(event,address);
 			break;
 		}
+		case Event::Data:{
+			DataEvent event(data);
+			emit getDataEvent(event,address);
+			break;
+		}
 		}
 	}
 }

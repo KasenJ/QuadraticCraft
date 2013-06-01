@@ -4,7 +4,7 @@
 #include <QtGui>
 #include <QtCore>
 #include "Types.h"
-#include "Square.h"
+#include "Share.h"
 
 class Buffer:public QObject
 {
@@ -18,16 +18,13 @@ private:
 	QRect rect;
 	QRect buff;
 	QList<Role> roles;
-	QVector<BitType> bitmap;
-
-signals:
-	void blank(QList<QRect>);
+	QVector<SquareType> bitmap;
 
 public slots:
 	void setRect(const QRect &_rect);
 	void setRoles(const QList<Role> &_roles);
-	void setBitmap(const QVector<BitType> &_bitmap,const QRect &_rect);
-	void setBitmap(const QVector<BitType> &_bitmap,const QList<QRect> &_rects);
+	void setBitmap(const Bitmap &_bitmap,const QRect &_rect);
+	void setBitmap(const Bitmap &_bitmap,const QList<QRect> &_rects);
 };
 
 #endif // BITMAP_H

@@ -17,7 +17,8 @@ SOURCES += \
     ./Handlers/UpdateEventHandle.cpp \
     ./Handlers/UserEventHandle.cpp \
     ./Handlers/ItemEventHandle.cpp \
-    ./Handlers/PlayerEventHandle.cpp
+    ./Handlers/PlayerEventHandle.cpp \
+    Handlers/DataEventHandle.cpp
 
 HEADERS += \
     Types.h \
