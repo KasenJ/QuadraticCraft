@@ -4,9 +4,9 @@
 #include <QPoint>
 #include <QByteArray>
 #include <QDataStream>
-#include "Bit.h"
 #include "Event.h"
 
+typedef quint8 BitType;
 typedef quint8 Operation;
 typedef QPair<BitType,qint8> Cell;
 typedef QList<Cell> Package;

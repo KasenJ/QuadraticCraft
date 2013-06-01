@@ -19,21 +19,21 @@ Login::Login(QWidget *parent) :
 	button->setStandardButtons(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
 	button->setGeometry(140,225,120,60);
 	connect(button,&QDialogButtonBox::accepted,[this](){
-		server.setAddress(address->text());
+		Share::server.setAddress(address->text());
 		UserEvent event;
 		event.setState(UserEvent::Login);
 		event.setUsername(username->text());
 		event.setPassword(password->text());
-		socket->sendEvent(event,server);
+		Share::sendEvent(event);
 		QTimer *timer=new QTimer(this);
 		timer->setSingleShot(true);
 		timer->start(1000);
 		connect(timer,&QTimer::timeout,[this](){
 			address->setPlaceholderText(tr("Connection Failed"));
 			address->setText(QString());
-			server.clear();
+			Share::server.clear();
 		});
-		connect(socket,&Socket::getUserEvent,[this,timer](const UserEvent &event){
+		connect(Share::socket,&Socket::getUserEvent,[this,timer](const UserEvent &event){
 			timer->stop();
 			if(event.getState()==UserEvent::Logged){
 				accept();
@@ -45,16 +45,6 @@ Login::Login(QWidget *parent) :
 		});
 	});
 	connect(button,&QDialogButtonBox::rejected,this,&QDialog::reject);
-}
-
-void Login::setSocket(Socket *socket)
-{
-	this->socket=socket;
-}
-
-const QHostAddress &Login::getServer() const
-{
-	return server;
 }
 
 void Login::showEvent(QShowEvent *e)

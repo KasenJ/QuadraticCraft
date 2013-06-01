@@ -30,11 +30,10 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 			if(query.first()){
 				QRect w=Utils::fromByteArray<QRect>(query.value("Data").toByteArray());
 				qsrand(QTime::currentTime().msec());
-				query.prepare("INSERT INTO Player VALUES (?,?,?,?,?)");
+				query.prepare("INSERT INTO Player VALUES (?,?,?,?)");
 				query.addBindValue(event.getUsername());
-				query.addBindValue("Undefined");
-				query.addBindValue("Undefined");
 				query.addBindValue(event.getPassword());
+				query.addBindValue(128);
 				query.addBindValue(Utils::toInt(w.topLeft()+QPoint(qrand()%w.width(),qrand()%w.height())));
 				if(query.exec()){
 					qDebug()<<"Init Succeed";
@@ -50,7 +49,7 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 		if(reply.getState()==UserEvent::Logged){
 			userMap[address]=event.getUsername();
 			qDebug()<<"User"<<userMap[address]<<"Logged";
-			query.prepare("SELECT Position,Occupation FROM Player WHERE PName=?");
+			query.prepare("SELECT Player.Position,Bit.Info FROM Player,Bit WHERE PName=? AND Player.Occupation=Bit.Type");
 			query.addBindValue(userMap[address]);
 			query.exec();
 			if(query.first()){
@@ -58,9 +57,9 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 
 				PlayerEvent initPlayer;
 				initPlayer.setName(userMap[address]);
-				initPlayer.setOccupation(query.value("Occupation").toString());
+				initPlayer.setOccupation(query.value("Info").toByteArray());
 				initPlayer.setPosition(initPoint);
-				query.prepare("SELECT Item, Number FROM Cell WHERE PName=?");
+				query.prepare("SELECT Item,Number FROM Cell WHERE PName=?");
 				query.addBindValue(userMap[address]);
 				query.exec();
 				Package initPackage;
@@ -76,13 +75,13 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 				query.prepare("SELECT Occupation,Position FROM Player;");
 				query.exec();
 				while(query.next()){
-					auto b=Bit::White;
+					auto b=query.value("Occupation").toInt();
 					auto p=Utils::toPoint(query.value("Position").toInt());
 					initRoles.append(Role(b,p));
 				}
 				initUpdate.setRoles(initRoles);
 
-				Utils::delayExec(500,[=](){
+				Utils::delayExec(0,[=](){
 					sendEvent(initPlayer,address);
 					sendEvent(initUpdate,address);
 				});

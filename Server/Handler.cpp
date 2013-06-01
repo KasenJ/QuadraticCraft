@@ -9,12 +9,6 @@ Handler::Handler(QObject *parent):
 	QSqlQuery().exec("PRAGMA synchronous = OFF;");
 	QSqlQuery().exec("PRAGMA foreign_keys = ON;");
 	QSqlQuery query(data);
-	query.exec("SELECT * FROM Access");
-	while(query.next()){
-		const auto &t=query.value("Type").toInt();
-		const auto &c=query.value("Control").toBool();
-		access.insert(t,c);
-	}
 	query.exec("SELECT * FROM Event");
 	while(query.next()){
 		const auto &r=Utils::fromByteArray<QRect>(query.value("Rect").toByteArray());
@@ -47,4 +41,5 @@ void Handler::setSocket(Socket *socket)
 	connect(socket,&Socket::getPlayerEvent,this,&Handler::PlayerEventHandle);
 	connect(socket,&Socket::getUpdateEvent,this,&Handler::UpdateEventHandle);
 	connect(socket,&Socket::getUserEvent,this,&Handler::UserEventHandle);
+	connect(socket,&Socket::getDataEvent,this,&Handler::DataEventHandle);
 }

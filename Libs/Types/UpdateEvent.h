@@ -5,9 +5,11 @@
 #include <QVector>
 #include <QByteArray>
 #include <QDataStream>
-#include "Bit.h"
 #include "Event.h"
 
+typedef quint8 BitType;
+typedef quint32 SquareType;
+typedef QVector<SquareType> Bitmap;
 typedef QPair<BitType,QPoint> Role;
 
 class UpdateEvent:public Event
@@ -15,7 +17,7 @@ class UpdateEvent:public Event
 private:
 	QList<Role> roles;
 	QList<QRect> rects;
-	QVector<BitType> bitmap;
+	QVector<SquareType> bitmap;
 
 public:
 	UpdateEvent(const QByteArray &data=QByteArray())
@@ -46,8 +48,8 @@ public:
 	inline void setRect(const QRect &rect){rects.clear();rects.append(rect);}
 	inline void setRects(const QList<QRect> &rects){this->rects=rects;}
 
-	inline const QVector<BitType> &getBitmap() const {return bitmap;}
-	inline void setBitmap(const QVector<BitType> &bitmap){this->bitmap=bitmap;}
+	inline const Bitmap &getBitmap() const {return bitmap;}
+	inline void setBitmap(const Bitmap &bitmap){this->bitmap=bitmap;}
 
 };
 

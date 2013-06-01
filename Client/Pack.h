@@ -4,7 +4,7 @@
 #include <QtCore>
 #include <QtWidgets>
 #include "Types.h"
-#include "Square.h"
+#include "Share.h"
 #include "Produce.h"
 
 class Pack:public QWidget
@@ -31,9 +31,6 @@ private:
 	int getIndex(const QPoint &p) const;
 	QRect mapRect(int i,int j) const;
 	QPoint mapPosition(int i,int j) const;
-
-signals:
-	void send(Package);
 
 public slots:
 	void pop();

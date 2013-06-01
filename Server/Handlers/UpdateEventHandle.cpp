@@ -4,10 +4,10 @@ void Handler::UpdateEventHandle(const UpdateEvent &event,const QHostAddress &add
 {
 	qDebug()<<"Get UpdateEvent";
 	QSqlQuery query;
-	QVector<BitType> bitmap;
+	Bitmap bitmap;
 	for(const QRect &rect:event.getRects()){
 		int x=rect.x(),y=rect.y(),w=rect.width(),h=rect.height();
-		QVector<BitType> bits(w*h,Bit::Black);
+		Bitmap bits(w*h,0);
 		for(int i=0;i<w;i++){
 			query.prepare("SELECT Type,Position FROM Cube WHERE Position>=? AND Position<?");
 			query.addBindValue(Utils::toInt(QPoint(x+i,y)));
