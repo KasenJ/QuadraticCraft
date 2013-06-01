@@ -4,13 +4,19 @@ void Handler::PlayerEventHandle(const PlayerEvent &event,const QHostAddress &add
 {
 	qDebug()<<"Get PlayerEvent";
 	QSqlQuery query;
-	query.prepare("SELECT Type FROM Cube WHERE Position=?");
-	query.addBindValue(Utils::toInt(event.getPosition()));
-	query.exec();
-	bool reach=query.first();
+	bool reach=true;
 	if(reach){
-		int type=query.value("Type").toInt();
-		reach=access[type];
+		query.prepare("SELECT Move FROM Cube,Bit WHERE Position=? AND Cube.Type=Bit.Type");
+		query.addBindValue(Utils::toInt(event.getPosition()));
+		query.exec();
+		reach=query.first()&&query.value("Move").toBool();
+	}
+	if(reach){
+		query.prepare("SELECT * FROM Player WHERE Position=? AND PName<>?");
+		query.addBindValue(Utils::toInt(event.getPosition()));
+		query.addBindValue(userMap[address]);
+		query.exec();
+		reach=!query.first();
 	}
 	if(reach){
 		for(auto iter=events.begin();iter!=events.end();){
@@ -27,6 +33,7 @@ void Handler::PlayerEventHandle(const PlayerEvent &event,const QHostAddress &add
 			}
 		}
 	}
+
 	PlayerEvent reply;
 	if(reach){
 		query.prepare("UPDATE Player SET Position=? WHERE PName=?");
@@ -34,6 +41,19 @@ void Handler::PlayerEventHandle(const PlayerEvent &event,const QHostAddress &add
 		query.addBindValue(userMap[address]);
 		query.exec();
 		reply.setPosition(event.getPosition());
+		UpdateEvent update;
+		QList<Role> roles;
+		query.prepare("SELECT Occupation,Position FROM Player;");
+		query.exec();
+		while(query.next()){
+			auto b=query.value("Occupation").toInt();
+			auto p=Utils::toPoint(query.value("Position").toInt());
+			roles.append(Role(b,p));
+		}
+		update.setRoles(roles);
+		for(QHostAddress a:userMap.keys()){
+			sendEvent(update,a);
+		}
 	}
 	else{
 		qDebug()<<"Can Not Move To This Position";
@@ -47,17 +67,24 @@ void Handler::PlayerEventHandle(const PlayerEvent &event,const QHostAddress &add
 		query.exec();
 		bool flag=false;
 		if(query.first()){
-			int number=query.value("Number").toInt();
-			if(number+it.second>=0){
+			int n=query.value("Number").toInt()+it.second;
+			if(n>0){
 				flag=true;
 				query.prepare("UPDATE Cell SET Number=? WHERE WHERE PName=? AND Item=?");
-				query.addBindValue(number+it.second);
+				query.addBindValue(n);
+				query.addBindValue(userMap[address]);
+				query.addBindValue(it.first);
+				query.exec();
+			}
+			else if(n==0){
+				flag=true;
+				query.prepare("DELETE FROM Cell WHERE PName=? AND Item=?");
 				query.addBindValue(userMap[address]);
 				query.addBindValue(it.first);
 				query.exec();
 			}
 		}
-		else if(it.second>=0){
+		else if(it.second>0){
 			flag=true;
 			query.prepare("INSERT INTO Cell VALUES(?,?,?)");
 			query.addBindValue(userMap[address]);

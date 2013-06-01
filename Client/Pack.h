@@ -4,7 +4,7 @@
 #include <QtCore>
 #include <QtWidgets>
 #include "Types.h"
-#include "Square.h"
+#include "Share.h"
 #include "Produce.h"
 
 class Pack:public QWidget

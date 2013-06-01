@@ -18,15 +18,17 @@ private:
 	Socket *socket;
 	QSqlDatabase data;
 	QHash<QHostAddress,QString> userMap;
-	QHash<BitType,bool> access;
-	QList< QPair<QRect,ScriptEvent> > events;
-	inline void sendEvent(const Event &event,const QHostAddress &address){socket->sendEvent(event,address);}
+	QList<QPair<QRect,ScriptEvent> > events;
+	void sendEvent(const Event &event,const QHostAddress &address);
+	void broadEvent(const Event &event);
 
 public slots:
 	void ItemEventHandle(const ItemEvent &event,const QHostAddress &address);
 	void PlayerEventHandle(const PlayerEvent &event,const QHostAddress &address);
 	void UpdateEventHandle(const UpdateEvent &event,const QHostAddress &address);
 	void UserEventHandle(const UserEvent &event,const QHostAddress &address);
+	void DataEventHandle(const DataEvent &event,const QHostAddress &address);
+
 };
 
 #endif // HANDLER_H
