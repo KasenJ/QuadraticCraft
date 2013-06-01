@@ -1,7 +1,5 @@
 #include "Info.h"
 
-extern Square *square;
-
 Info::Info(QWidget *parent) :
 	QWidget(parent)
 {

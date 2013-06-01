@@ -4,7 +4,7 @@
 #include <QtGui>
 #include <QtCore>
 #include <QtWidgets>
-#include "Square.h"
+#include "Types.h"
 
 class Info:public QWidget
 {

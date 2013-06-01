@@ -1,7 +1,5 @@
 #include "Buffer.h"
 
-extern Square *square;
-
 Buffer::Buffer(QObject *parent):
 	QObject(parent)
 {
@@ -14,11 +12,13 @@ void Buffer::draw(QPainter *painter)
 	for(int i=0;i<h;++i){
 		for(int j=0;j<w;++j){
 			QPoint p=QPoint(j,i);
-			painter->drawPixmap(p*50,square->at(bitmap[Utils::toInt(p+t,buff)]));
+			for(const QPixmap &s:Share::square->getPixmaps(bitmap[Utils::toInt(p+t,buff)])){
+				painter->drawPixmap(p*50,s);
+			}
 		}
 	}
 	for(const Role &role:roles){
-		painter->drawPixmap((role.second-rect.topLeft())*50,square->at(role.first));
+		painter->drawPixmap((role.second-rect.topLeft())*50,Share::square->getPixmap(role.first));
 	}
 }
 
@@ -29,7 +29,7 @@ void Buffer::setRect(const QRect &_rect)
 		rect=_rect;
 		buff=QRect(rect.topLeft()-QPoint(10,10),rect.bottomRight()+QPoint(10,10));
 		b.append(buff);
-		bitmap.fill(Bit::Black,buff.width()*buff.height());
+		bitmap.fill(0,buff.width()*buff.height());
 	}
 	else{
 		rect=_rect;
@@ -51,14 +51,16 @@ void Buffer::setRect(const QRect &_rect)
 			b.append(QRect(QPoint(buff.left(),_buff.bottom()),QPoint(buff.right(),buff.bottom())));
 		}
 		if(buff!=_buff){
-			QVector<BitType> _bitmap(bitmap);
+			Bitmap _bitmap(bitmap);
 			bitmap.resize(buff.width()*buff.height());
-			bitmap.fill(Bit::Black);
+			bitmap.fill(0);
 			setBitmap(_bitmap,_buff);
 		}
 	}
 	if(!b.isEmpty()){
-		emit blank(b);
+		UpdateEvent e;
+		e.setRects(b);
+		Share::sendEvent(e);
 	}
 }
 
@@ -67,13 +69,13 @@ void Buffer::setRoles(const QList<Role> &_roles)
 	roles=_roles;
 }
 
-void Buffer::setBitmap(const QVector<BitType> &_bitmap, const QRect &_rect)
+void Buffer::setBitmap(const Bitmap &_bitmap, const QRect &_rect)
 {
 	QList<QRect> _rects={_rect};
 	setBitmap(_bitmap,_rects);
 }
 
-void Buffer::setBitmap(const QVector<BitType> &_bitmap,const QList<QRect> &_rects)
+void Buffer::setBitmap(const Bitmap &_bitmap,const QList<QRect> &_rects)
 {
 	int i=0;
 	for(const QRect &r:_rects){

@@ -2,7 +2,8 @@ QT += \
     core \
     gui \
     widgets \
-    network
+    network \
+    sql
 
 TARGET = Client
 
@@ -15,27 +16,26 @@ SOURCES += \
     Interface.cpp \
     Login.cpp \
     Buffer.cpp \
-    Square.cpp \
     Info.cpp \
     Pack.cpp \
-    Produce.cpp
+    Produce.cpp \
+    Share.cpp \
+    Chat.cpp
 
 HEADERS += \
     Types.h \
     Interface.h \
     Login.h \
     Buffer.h \
-    Square.h \
     Info.h \
     Pack.h \
-    Produce.h
+    Produce.h \
+    Share.h \
+    Chat.h
 
 LIBS += -L../Libs\
     -lTypes \
     -lUtils
-
-RESOURCES += \
-    Resource.qrc
 
 TRANSLATIONS = \
     zh_CN.ts

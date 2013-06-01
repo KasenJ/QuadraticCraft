@@ -4,7 +4,7 @@
 #include <QtCore>
 #include <QtWidgets>
 #include "Types.h"
-#include "Square.h"
+#include "Share.h"
 
 class Produce:public QFrame
 {
@@ -19,9 +19,6 @@ private:
 	void paintEvent(QPaintEvent *e);
 	void wheelEvent(QWheelEvent *e);
 	void dragEnterEvent(QDragEnterEvent *e);
-
-signals:
-	void produce(Package);
 	
 };
 

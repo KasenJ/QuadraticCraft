@@ -1,7 +1,5 @@
 #include "Produce.h"
 
-extern Square *square;
-
 Produce::Produce(QWidget *parent):
 	QFrame(parent)
 {
@@ -31,7 +29,10 @@ Produce::Produce(QWidget *parent):
 			items.clear();
 			count.clear();
 			update();
-			emit produce(change);
+			ItemEvent e;
+			e.setPackege(change);
+			e.setOperation(ItemEvent::Produce);
+			Share::sendEvent(e);
 		});
 		menu.exec(mapToGlobal(p));
 	});
@@ -65,7 +66,7 @@ void Produce::paintEvent(QPaintEvent *e)
 	painter.begin(this);
 	int i=0;
 	for(const Cell &item:items){
-		painter.drawPixmap(10,10+i*62.5,square->at(item.first));
+		painter.drawPixmap(10,10+i*62.5,Share::square->getPixmap(item.first));
 		painter.drawText(65,40+i*62.5,QString("x%1").arg(count[i]));
 		++i;
 	}
