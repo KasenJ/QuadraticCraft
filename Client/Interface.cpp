@@ -6,6 +6,7 @@ Interface::Interface(QWidget *parent):
 	blocked=0;
 	info=new Info(this);
 	pack=new Pack(this);
+	chat=new Chat(this);
 	buffer=new Buffer(this);
 	script=new QLabel(this);
 	Share::square=new Square(this);
@@ -44,6 +45,7 @@ Interface::Interface(QWidget *parent):
 		if(x<-50||x>width()+50||y<-50||y>height()+50){
 			info->push();
 			pack->push();
+			chat->fadeOut();
 		}
 		else{
 			if(x>250){
@@ -52,11 +54,17 @@ Interface::Interface(QWidget *parent):
 			if(x<width()-250){
 				pack->push();
 			}
+			if(x>500||y<350){
+				chat->fadeOut();
+			}
 			if(!blocked&&x<50){
 				info->pop();
 			}
 			if(!blocked&&x>width()-50){
 				pack->pop();
+			}
+			if(x<450&&y>height()-50){
+				chat->fadeIn();
 			}
 		}
 	});
@@ -190,11 +198,18 @@ Interface::Interface(QWidget *parent):
 		});
 	});
 	connect(Share::socket,&Socket::getDataEvent,[this](const DataEvent &e){
-		--blocked;
+		bool unlocked=false;
 		QHash<QString,QByteArray> d=e.getData();
 		for(QString item:d.keys()){
 			if(item.startsWith("T:")){
+				if(!unlocked){
+					unlocked=true;
+					--blocked;
+				}
 				Share::square->setPixmap(item.mid(2).toInt(),Utils::fromByteArray<QPixmap>(d[item]));
+			}
+			if(item.startsWith("C:")){
+				chat->append(d[item]);
 			}
 		}
 		update();
@@ -221,8 +236,9 @@ void Interface::paintEvent(QPaintEvent *e)
 void Interface::resizeEvent(QResizeEvent *e)
 {
 	int w=e->size().width(),h=e->size().height();
-	info->setGeometry(QRect(info->isPopped()?0:0-200,0,200,h));
-	pack->setGeometry(QRect(pack->isPopped()?w-200:w,0,200,h));
+	info->setGeometry(info->isPopped()?0:0-200,0,200,h);
+	pack->setGeometry(pack->isPopped()?w-200:w,0,200,h);
+	chat->setGeometry(0,height()-300,450,300);
 	QWidget::resizeEvent(e);
 }
 
