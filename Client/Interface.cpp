@@ -1,15 +1,14 @@
 #include "Interface.h"
 
-Square *square=NULL;
-
 Interface::Interface(QWidget *parent):
 	QWidget(parent)
 {
-	blocked=false;
+	blocked=0;
 	info=new Info(this);
 	pack=new Pack(this);
 	buffer=new Buffer(this);
 	script=new QLabel(this);
+	Share::square=new Square(this);
 	script->setGeometry(210,600,380,100);
 	script->setAlignment(Qt::AlignCenter);
 	script->setAutoFillBackground(true);
@@ -17,7 +16,7 @@ Interface::Interface(QWidget *parent):
 	setWindowTitle(tr("QuadraticCraft"));
 	setFixedSize(800,600);
 	move(QApplication::desktop()->screenGeometry().center()-QPoint(400,300));
-	square=new Square;auto timer=new QTimer(this);
+	auto timer=new QTimer(this);
 	timer->start(100);
 	connect(timer,&QTimer::timeout,[this](){
 		QPoint move(0,0);
@@ -36,7 +35,7 @@ Interface::Interface(QWidget *parent):
 		if(!move.isNull()){
 			PlayerEvent playerEvent;
 			playerEvent.setPosition(info->getPosition()+move);
-			socket->sendEvent(playerEvent,server);
+			Share::sendEvent(playerEvent);
 		}
 
 		auto cursor=mapFromGlobal(QCursor::pos());
@@ -61,49 +60,36 @@ Interface::Interface(QWidget *parent):
 			}
 		}
 	});
-}
-
-Interface::~Interface()
-{
-	UserEvent event;
-	event.setUsername(info->getPlayerName());
-	event.setState(UserEvent::Logout);
-	socket->sendEvent(event,server);
-}
-
-void Interface::setSocket(Socket *_socket)
-{
-	socket=_socket;
-	connect(socket,&Socket::getPlayerEvent,[this](const PlayerEvent &e){
+	connect(Share::socket,&Socket::getPlayerEvent,[this](const PlayerEvent &e){
 		if(!e.getPosition().isNull()){
 			info->setPosition(e.getPosition());
 			auto curPos=info->getPosition();
 			auto curRct=buffer->getRect();
-			QRect core(QPoint(0,0),curRct.size()/=2);
-			core.moveCenter(curRct.center());
-			if(core.contains(curPos)){
-				update();
+			if(curRct.isNull()){
+				curRct=QRect(0,0,16,12);
+				curRct.moveCenter(curPos);
+				buffer->setRect(curRct);
 			}
 			else{
-				QRect updated=curRct;
-				if(curPos.x()<core.left()){
-					core.moveLeft(curPos.x());
+				QRect core(QPoint(0,0),curRct.size()/=2);
+				core.moveCenter(curRct.center());
+				if(!core.contains(curPos)){
+					QRect updated=curRct;
+					if(curPos.x()<core.left()){
+						core.moveLeft(curPos.x());
+					}
+					if(curPos.x()>core.right()){
+						core.moveRight(curPos.x());
+					}
+					if(curPos.y()<core.top()){
+						core.moveTop(curPos.y());
+					}
+					if(curPos.y()>core.bottom()){
+						core.moveBottom(curPos.y());
+					}
+					updated.moveCenter(core.center());
+					buffer->setRect(updated);
 				}
-				if(curPos.x()>core.right()){
-					core.moveRight(curPos.x());
-				}
-				if(curPos.y()<core.top()){
-					core.moveTop(curPos.y());
-				}
-				if(curPos.y()>core.bottom()){
-					core.moveBottom(curPos.y());
-				}
-				updated.moveCenter(core.center());
-				buffer->setRect(updated);
-				UpdateEvent updateEvent;
-				QList<QRect> rects={updated};
-				updateEvent.setRects(rects);
-				socket->sendEvent(updateEvent,server);
 			}
 		}
 		if(!e.getPackage().isEmpty()){
@@ -116,7 +102,7 @@ void Interface::setSocket(Socket *_socket)
 			info->setOccupation(e.getOccupation());
 		}
 	});
-	connect(socket,&Socket::getScriptEvent,[this](const ScriptEvent &e){
+	connect(Share::socket,&Socket::getScriptEvent,[this](const ScriptEvent &e){
 		if(!e.getDialog().isEmpty()){
 			++blocked;
 			QTimer *delay=new QTimer(this);
@@ -178,7 +164,7 @@ void Interface::setSocket(Socket *_socket)
 								m=m.y()>0?QPoint(0,1):QPoint(0,-1);
 							}
 							playerEvent.setPosition(c+m);
-							socket->sendEvent(playerEvent,server);
+							Share::sendEvent(playerEvent);
 						}
 					}
 					else{
@@ -188,15 +174,39 @@ void Interface::setSocket(Socket *_socket)
 			});
 		}
 	});
-	connect(socket,&Socket::getUpdateEvent,[this](const UpdateEvent &e){
-		buffer->setBitmap(e.getBitmap(),e.getRects());
+	connect(Share::socket,&Socket::getUpdateEvent,[this](const UpdateEvent &e){
+		if(!e.getRoles().isEmpty()){
+			buffer->setRoles(e.getRoles());
+		}
+		if(!e.getBitmap().isEmpty()&&!e.getRects().isEmpty()){
+			buffer->setBitmap(e.getBitmap(),e.getRects());
+		}
+		Share::square->setLoad(true);
+		update();
+		Utils::delayExec(200,[this](){
+			if(Share::square->setLoad(false)){
+				++blocked;
+			}
+		});
+	});
+	connect(Share::socket,&Socket::getDataEvent,[this](const DataEvent &e){
+		--blocked;
+		QHash<QString,QByteArray> d=e.getData();
+		for(QString item:d.keys()){
+			if(item.startsWith("T:")){
+				Share::square->setPixmap(item.mid(2).toInt(),Utils::fromByteArray<QPixmap>(d[item]));
+			}
+		}
 		update();
 	});
 }
 
-void Interface::setServer(const QHostAddress &server)
+Interface::~Interface()
 {
-	this->server=server;
+	UserEvent event;
+	event.setUsername(info->getPlayerName());
+	event.setState(UserEvent::Logout);
+	Share::sendEvent(event);
 }
 
 void Interface::paintEvent(QPaintEvent *e)
@@ -204,7 +214,6 @@ void Interface::paintEvent(QPaintEvent *e)
 	QPainter painter;
 	painter.begin(this);
 	buffer->draw(&painter);
-	info->draw(&painter,buffer->getRect());
 	painter.end();
 	QWidget::paintEvent(e);
 }
@@ -244,6 +253,6 @@ void Interface::mouseReleaseEvent(QMouseEvent *e)
 		if(e->button()==Qt::LeftButton){
 			itemEvent.setOperation(ItemEvent::Get);
 		}
-		socket->sendEvent(itemEvent,server);
+		Share::sendEvent(itemEvent);
 	}
 }

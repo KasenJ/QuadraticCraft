@@ -1,7 +1,5 @@
 #include "Info.h"
 
-extern Square *square;
-
 Info::Info(QWidget *parent) :
 	QWidget(parent)
 {
@@ -29,12 +27,6 @@ Info::Info(QWidget *parent) :
 	pstionE->setReadOnly(true);
 	pstionE->setGeometry(QRect(10,220, 120,25));
 
-}
-
-void Info::draw(QPainter *painter,QRect rect)
-{
-	QPoint trans(current.x()-rect.x(),current.y()-rect.y());
-	painter->drawPixmap(trans.x()*50,trans.y()*50,square->at(1));
 }
 
 void Info::pop()

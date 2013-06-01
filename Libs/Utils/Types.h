@@ -1,6 +1,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include "../Types/DataEvent.h"
 #include "../Types/Event.h"
 #include "../Types/ItemEvent.h"
 #include "../Types/PlayerEvent.h"

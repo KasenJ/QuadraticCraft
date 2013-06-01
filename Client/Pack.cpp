@@ -12,7 +12,7 @@ Pack::Pack(QWidget *parent):
 	animation->setDuration(200);
 	animation->setEasingCurve(QEasingCurve::OutCubic);
 	produce=new Produce(this);
-	produce->setGeometry(10,300,180,290);
+	produce->setGeometry(12.5,300,175,290);
 }
 
 void Pack::paintEvent(QPaintEvent *e)
@@ -23,11 +23,11 @@ void Pack::paintEvent(QPaintEvent *e)
 	int i,j,c=0;
 	for(i=0;i<4;++i){
 		for(j=0;j<3;++j){
-			painter.drawRect(mapRect(i,j));
 			if(c<package.size()){
-				painter.drawPixmap(mapPosition(i,j),square->at(package[c].first));
+				painter.drawPixmap(mapPosition(i,j),Share::square->getPixmap(package[c].first));
 				painter.drawText(mapPosition(i,j)+QPoint(4,47.5),QString("x%1").arg(package[c].second));
 			}
+			painter.drawRect(mapRect(i,j));
 			++c;
 		}
 	}
@@ -54,7 +54,7 @@ void Pack::mouseMoveEvent(QMouseEvent *e)
 			data->setData("Item",Utils::toByteArray(package[i]));
 			QDrag drag(this);
 			drag.setMimeData(data);
-			drag.setPixmap(square->at(package[i].first));
+			drag.setPixmap(Share::square->getPixmap(package[i].first));
 			drag.setHotSpot(e->pos()-mapPosition(i/3,i%3));
 			drag.exec();
 		}
@@ -137,4 +137,5 @@ void Pack::setPackage(const Package &change)
 			package.append(item);
 		}
 	}
+	update();
 }

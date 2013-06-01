@@ -1,6 +1,8 @@
 QT += \
     sql \
-    core
+    core \
+    gui \
+    widgets
 
 TARGET = Editor
 

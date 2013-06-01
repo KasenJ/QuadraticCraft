@@ -14,8 +14,8 @@ HEADERS += \
     UpdateEvent.h \
     UserEvent.h \
     PlayerEvent.h \
-    Bit.h \
     ItemEvent.h \
-    ScriptEvent.h
+    ScriptEvent.h \
+    DataEvent.h
 
 SOURCES += \

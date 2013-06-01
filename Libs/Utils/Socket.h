@@ -24,6 +24,7 @@ signals:
 	void getScriptEvent(const ScriptEvent &event,const QHostAddress &address);
 	void getUpdateEvent(const UpdateEvent &event,const QHostAddress &address);
 	void getUserEvent(const UserEvent &event,const QHostAddress &address);
+	void getDataEvent(const DataEvent &event,const QHostAddress &address);
 
 public slots:
 	void sendEvent(const Event &event,const QHostAddress &address);

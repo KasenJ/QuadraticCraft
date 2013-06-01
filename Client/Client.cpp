@@ -1,13 +1,10 @@
 #include <QApplication>
 #include "Login.h"
+#include "Share.h"
 #include "Interface.h"
 
 int main(int argc, char *argv[])
 {
-	QTranslator myTrans;
-	myTrans.load("zh_CN.qm",":/Trans/");
-	QTranslator qtTrans;
-	qtTrans.load("zh_CN.qt.qm",":/Trans/");
 #ifdef Q_OS_WIN
 	QFont font("微软雅黑");
 	font.setPointSize(9);
@@ -20,18 +17,21 @@ int main(int argc, char *argv[])
 #endif
 	QApplication::setStyle("Fusion");
 	QApplication a(argc, argv);
+	QString locale=QLocale::system().name();
+	QTranslator myTrans;
+	myTrans.load(locale+".qm");
+	QTranslator qtTrans;
+	qtTrans.load(locale+".qt.qm");
 	a.installTranslator(&myTrans);
 	a.installTranslator(&qtTrans);
 	Socket socket;
 	socket.setSendPort(12450);
 	socket.setReceivePort(45012);
+	Share::socket=&socket;
 	Login login;
-	login.setSocket(&socket);
 	login.show();
 	Interface interface;
-	interface.setSocket(&socket);
 	if(login.exec()==QDialog::Accepted){
-		interface.setServer(login.getServer());
 		interface.show();
 		return a.exec();
 	}
