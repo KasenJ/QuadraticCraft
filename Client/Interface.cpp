@@ -57,13 +57,13 @@ Interface::Interface(QWidget *parent):
 			if(x>500||y<350){
 				chat->fadeOut();
 			}
-			if(!blocked&&x<50){
+			if(!blocked&&x<50&&!chat->isPoped()){
 				info->pop();
 			}
 			if(!blocked&&x>width()-50){
 				pack->pop();
 			}
-			if(x<450&&y>height()-50){
+			if(x<450&&y>height()-50&&!info->isPopped()){
 				chat->fadeIn();
 			}
 		}

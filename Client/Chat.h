@@ -12,6 +12,7 @@ class Chat:public QWidget
 public:
 	explicit Chat(QWidget *parent=0);
 	~Chat();
+	bool isPoped() const {return ioo!=0;}
 
 private:
 	int ioo;
