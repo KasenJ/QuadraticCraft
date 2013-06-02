@@ -36,6 +36,7 @@ Chat::Chat(QWidget *parent):
 	});
 	connect(delay,&QTimer::timeout,[this](){
 		if(!rect().contains(mapFromGlobal(QCursor::pos()))){
+			self=false;
 			fadeOut();
 		}
 	});
@@ -49,6 +50,7 @@ Chat::Chat(QWidget *parent):
 		h.insert("C:",line->text().toUtf8());
 		e.setData(h);
 		Share::sendEvent(e);
+		line->clear();
 	});
 	QFont f=font();
 	f.setPointSize(10);
