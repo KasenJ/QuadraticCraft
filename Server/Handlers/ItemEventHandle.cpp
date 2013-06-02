@@ -8,8 +8,9 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 	case ItemEvent::Get:
 	{
 		QSqlQuery query;
-		query.prepare("SELECT Type FROM Cube Where Position=?");
+		query.prepare("SELECT Type FROM Cube,Bit Where Position=? AND Bit.Take=?");
 		query.addBindValue(Utils::toInt(event.getPoint()));
+		query.addBindValue(true);
 		query.exec();
 		if(query.first()){
 			SquareType type=query.value("Type").toULongLong();
@@ -32,6 +33,39 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 				query.addBindValue(1);
 			}
 			query.exec();
+			query.prepare("SELECT Info FROM Player,Bit WHERE PName=? AND Occupation=Type");
+			query.addBindValue(userMap[address]);
+			query.exec();
+			if(query.first()){
+				QDataStream s(query.value("Info").toByteArray());
+				QString n,d;
+				QHash <BitType,BitType> h;
+				s>>n>>d>>h;
+				if(h.contains(bit)){
+					query.prepare("UPDATE Player SET Occupation=? WHERE PName=?");
+					query.addBindValue(h[bit]);
+					query.addBindValue(userMap[address]);
+					query.exec();
+					ScriptEvent s;
+					Dialog dia;
+					dia.append(QPair<QString,quint32>(QString("转职为%1成功").arg(n),1000));
+					dia.append(QPair<QString,quint32>(QString("职业描述:%1").arg(d),2000));
+					s.setDialog(dia);
+					sendEvent(s,address);
+
+					UpdateEvent update;
+					QList<Role> roles;
+					query.prepare("SELECT Occupation,Position FROM Player;");
+					query.exec();
+					while(query.next()){
+						auto b=query.value("Occupation").toInt();
+						auto p=Utils::toPoint(query.value("Position").toInt());
+						roles.append(Role(b,p));
+					}
+					update.setRoles(roles);
+					broadEvent(update);
+				}
+			}
 			PlayerEvent reply;
 			Package change={Cell(bit,1)};
 			reply.setPackege(change);
@@ -49,7 +83,7 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 			broadEvent(broad);
 		}
 		else{
-			qDebug()<<"No such item in Cube";
+			qDebug()<<"Can not take";
 		}
 		break;
 	}
