@@ -8,7 +8,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     imageshow = new ImageS(ui->dockWidget);
     setMouseTracking(true);
-    imageshow->setGeometry(0,80,300,600);
+	imageshow->setGeometry(0,80,300,600);
+	auto sc=new QScrollArea(this);
+	render=new Render(imageshow,&Map);
+	sc->setWidget(render);
+	setCentralWidget(sc);
 }
 
 MainWindow::~MainWindow()
@@ -17,20 +21,6 @@ MainWindow::~MainWindow()
     imageshow->close();
 }
 
-void MainWindow::paintEvent(QPaintEvent *)
-{
-    QPainter painter(this);
-    painter.translate(300,35);
-    for(int i = 0;i < Map.width; i++)
-    {
-        for(int j = 0; j < Map.height; j++)
-        {
-            quint64& temp = Map.at(i,j);
-            quint8 a = temp&0xFF;
-            painter.drawPixmap(i*50,j*50,50,50,imageshow->atimageS(a));
-        }
-    }
-}
 void MainWindow::keyPressEvent(QKeyEvent *e)
 {
     if(e->key() == Qt::Key_E)
@@ -59,7 +49,7 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
         this->update();
     }
     if(e->button() == Qt::RightButton){
-        dragPosition = e->globalPos()- frameGeometry().topLeft();
+		dragPosition = render->pos()-e->pos();
         e->accept();
     }
 }
@@ -90,12 +80,10 @@ void MainWindow::on_pushButton_clicked()
     paint_true = true;
 }
 
-
 void MainWindow::on_pushButton_2_clicked()
 {
     paint_true = false;
 }
-
 
 void MainWindow::doNew()
 {
@@ -107,13 +95,13 @@ void MainWindow::doNew()
         int width;
         width  = creatnew.getBitmapWidth();
         Map.setBitmap(height,width);
+		render->resize(height*50,width*50);
         update();
 
         Map.CombineList.clear();
         Map.CombineList = QVector<combine>(0);
     }
 }
-
 
 void MainWindow::on_action_triggered()
 {
@@ -166,7 +154,7 @@ void MainWindow::on_pushButton_3_clicked()
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons() & Qt::RightButton) {
-        move(event->globalPos() - dragPosition);
+		render->move(dragPosition+event->pos());
         event->accept();
     }
 }

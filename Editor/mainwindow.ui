@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>5500</width>
-    <height>5500</height>
+    <width>800</width>
+    <height>633</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>5500</width>
+     <width>800</width>
      <height>21</height>
     </rect>
    </property>
@@ -39,25 +39,17 @@
    <addaction name="menu"/>
    <addaction name="menu_2"/>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-  </widget>
   <widget class="QDockWidget" name="dockWidget">
    <property name="minimumSize">
     <size>
      <width>300</width>
-     <height>800</height>
+     <height>600</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
      <width>300</width>
-     <height>800</height>
+     <height>600</height>
     </size>
    </property>
    <property name="autoFillBackground">
@@ -129,7 +121,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>paint</string>
+      <string>绘图</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_2">
@@ -142,14 +134,14 @@
       </rect>
      </property>
      <property name="text">
-      <string>erase</string>
+      <string>擦除</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_3">
      <property name="geometry">
       <rect>
-       <x>150</x>
-       <y>0</y>
+       <x>170</x>
+       <y>5</y>
        <width>75</width>
        <height>23</height>
       </rect>
@@ -163,21 +155,6 @@
   <action name="action">
    <property name="text">
     <string>新建</string>
-   </property>
-  </action>
-  <action name="action_2">
-   <property name="text">
-    <string>保存</string>
-   </property>
-  </action>
-  <action name="action_3">
-   <property name="text">
-    <string>打开</string>
-   </property>
-  </action>
-  <action name="action_4">
-   <property name="text">
-    <string>退出</string>
    </property>
   </action>
   <action name="actionSetpass">

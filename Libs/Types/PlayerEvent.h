@@ -8,7 +8,7 @@
 #include "Event.h"
 
 typedef quint8 BitType;
-typedef QPair<BitType,qint8> Cell;
+typedef QPair<BitType,qint32> Cell;
 typedef QList<Cell> Package;
 
 class PlayerEvent:public Event
