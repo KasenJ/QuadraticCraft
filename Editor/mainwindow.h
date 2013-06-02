@@ -21,6 +21,7 @@
 #include <QtCore>
 #include <QtSql>
 #include "Images.h"
+#include "Render.h"
 namespace Ui {
 class MainWindow;
 }
@@ -35,8 +36,7 @@ public:
     ~MainWindow();
 
     void keyPressEvent(QKeyEvent *);
-    void mousePressEvent(QMouseEvent *);
-    void paintEvent(QPaintEvent *);
+	void mousePressEvent(QMouseEvent *);
     void mouseMoveEvent(QMouseEvent *);
     void setpic(int,int);
 
@@ -62,6 +62,7 @@ private:
     bool paint_true = true;
     ImageS *imageshow;
     QPoint dragPosition;
+	Render *render;
 };
 
 #endif // MAINWINDOW_H

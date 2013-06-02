@@ -22,7 +22,7 @@ class ImageS : public QWidget
 public:
     explicit ImageS(QWidget *parent = 0);
     ~ImageS();
-    int getType(){return _type;}
+	int getType(){return _type+1;}
     void mousePressEvent(QMouseEvent *);
     QPixmap atimageS(quint8 i);
 

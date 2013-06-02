@@ -7,6 +7,7 @@
 #include <QtNetwork>
 #include "Info.h"
 #include "Pack.h"
+#include "Chat.h"
 #include "Types.h"
 #include "Share.h"
 #include "Buffer.h"
@@ -22,6 +23,7 @@ private:
 	int blocked;
 	Info *info;
 	Pack *pack;
+	Chat *chat;
 	Buffer *buffer;
 	QLabel *script;
 	QHash<int,bool> keyState;

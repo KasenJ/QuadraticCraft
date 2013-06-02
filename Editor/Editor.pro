@@ -1,8 +1,8 @@
 QT += \
-    sql \
     core \
     gui \
-    widgets
+    widgets \
+    sql
 
 TARGET = Editor
 
@@ -17,7 +17,8 @@ SOURCES += \
     mainwindow.cpp \
     newdialog.cpp \
     listpass.cpp \
-    combinelist.cpp
+    combinelist.cpp \
+    Render.cpp
 
 HEADERS += \
     Types.h \
@@ -26,7 +27,8 @@ HEADERS += \
     mainwindow.h \
     newdialog.h \
     listpass.h \
-    combinelist.h
+    combinelist.h \
+    Render.h
 
 LIBS += -L../Libs\
     -lUtils

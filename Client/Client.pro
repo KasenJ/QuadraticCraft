@@ -19,7 +19,8 @@ SOURCES += \
     Info.cpp \
     Pack.cpp \
     Produce.cpp \
-    Share.cpp
+    Share.cpp \
+    Chat.cpp
 
 HEADERS += \
     Types.h \
@@ -29,7 +30,8 @@ HEADERS += \
     Info.h \
     Pack.h \
     Produce.h \
-    Share.h
+    Share.h \
+    Chat.h
 
 LIBS += -L../Libs\
     -lTypes \
