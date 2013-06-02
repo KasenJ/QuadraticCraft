@@ -8,9 +8,8 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 	case ItemEvent::Get:
 	{
 		QSqlQuery query;
-		query.prepare("SELECT Type FROM Cube,Bit Where Position=? AND Bit.Take=?");
+		query.prepare("SELECT Cube.Type FROM Cube,Bit Where Position=? AND Take=1 AND Bit.Type=Cube.Type%256");
 		query.addBindValue(Utils::toInt(event.getPoint()));
-		query.addBindValue(true);
 		query.exec();
 		if(query.first()){
 			SquareType type=query.value("Type").toULongLong();
@@ -83,7 +82,7 @@ void Handler::ItemEventHandle(const ItemEvent &event,const QHostAddress &address
 			broadEvent(broad);
 		}
 		else{
-			qDebug()<<"Can not take";
+			qDebug()<<"Can Not Take";
 		}
 		break;
 	}

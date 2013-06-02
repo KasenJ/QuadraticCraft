@@ -14,34 +14,56 @@ Square::Square(QObject *parent):
 	QSqlQuery query;
 	if(!exists){
 		query.exec("PRAGMA auto_vacuum = 1;");
-		query.exec("CREATE TABLE Cache (Type INTEGER, Pixmap BLOB, PRIMARY KEY(Type) );");
+		query.exec("CREATE TABLE Cache (Type INTEGER, Pixmap BLOB, TEXT Name, TEXT Desc, PRIMARY KEY(Type) );");
 	}
 	else{
-		query.exec("SELECT Type,Pixmap FROM Cache");
+		query.exec("SELECT * FROM Cache");
 		while(query.next()){
 			const auto &t=query.value("Type").toInt();
 			const auto &p=Utils::fromByteArray<QPixmap>(query.value("Pixmap").toByteArray());
-			map.insert(t,p);
+			const auto &n=query.value("Name").toString();
+			const auto &d=query.value("Desc").toString();
+			pm.insert(t,p);
+			nm.insert(t,n);
+			dm.insert(t,d);
 		}
 	}
 }
 
 QPixmap Square::getPixmap(BitType t)
 {
-	if(load&&!map.contains(t)){
+	if(load&&!pm.contains(t)){
 		blank.insert(t);
 	}
-	return map.value(t);
+	return pm.value(t);
 }
 
-void Square::setPixmap(BitType t,const QPixmap &p)
+QString Square::getName(BitType t)
 {
-	map.insert(t,p);
+	return nm.value(t);
+}
+
+QString Square::getDesc(BitType t)
+{
+	return dm.value(t);
+}
+
+void Square::insertBit(BitType t,const QByteArray &a)
+{
+	QString n,d;
+	QByteArray p;
+	QDataStream s(a);
+	s>>n>>d>>p;
 	QSqlQuery query;
-	query.prepare("INSERT INTO Cache VALUES(?,?);");
+	query.prepare("INSERT INTO Cache VALUES(?,?,?,?);");
 	query.addBindValue(t);
-	query.addBindValue(Utils::toByteArray(p));
+	query.addBindValue(p);
+	query.addBindValue(n);
+	query.addBindValue(d);
 	query.exec();
+	pm.insert(t,Utils::fromByteArray<QPixmap>(p));
+	nm.insert(t,n);
+	dm.insert(t,d);
 }
 
 QList<QPixmap> Square::getPixmaps(SquareType s)

@@ -54,10 +54,12 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 			query.exec();
 			if(query.first()){
 				QPoint initPoint=Utils::toPoint(query.value("Position").toInt());
-
+				QString n;
+				QDataStream s(query.value("Info").toByteArray());
+				s>>n;
 				PlayerEvent initPlayer;
 				initPlayer.setName(userMap[address]);
-				initPlayer.setOccupation(query.value("Info").toByteArray());
+				initPlayer.setOccupation(n);
 				initPlayer.setPosition(initPoint);
 				query.prepare("SELECT Item,Number FROM Cell WHERE PName=?");
 				query.addBindValue(userMap[address]);

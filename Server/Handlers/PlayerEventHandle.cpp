@@ -6,7 +6,7 @@ void Handler::PlayerEventHandle(const PlayerEvent &event,const QHostAddress &add
 	QSqlQuery query;
 	bool reach=true;
 	if(reach){
-		query.prepare("SELECT Move FROM Cube,Bit WHERE Position=? AND Cube.Type=Bit.Type");
+		query.prepare("SELECT Move FROM Cube,Bit WHERE Position=? AND Cube.Type%256=Bit.Type");
 		query.addBindValue(Utils::toInt(event.getPosition()));
 		query.exec();
 		reach=query.first()&&query.value("Move").toBool();

@@ -67,7 +67,10 @@ void Produce::paintEvent(QPaintEvent *e)
 	int i=0;
 	for(const Cell &item:items){
 		painter.drawPixmap(10,10+i*62.5,Share::square->getPixmap(item.first));
-		painter.drawText(65,40+i*62.5,QString("x%1").arg(count[i]));
+		QString t=QString("%1%2");
+		t=t.arg(QString("x%1").arg(count[i]),-6);
+		t=t.arg(Share::square->getName(item.first));
+		painter.drawText(65,40+i*62.5,t);
 		++i;
 	}
 	painter.end();
