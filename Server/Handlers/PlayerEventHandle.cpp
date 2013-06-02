@@ -51,9 +51,7 @@ void Handler::PlayerEventHandle(const PlayerEvent &event,const QHostAddress &add
 			roles.append(Role(b,p));
 		}
 		update.setRoles(roles);
-		for(QHostAddress a:userMap.keys()){
-			sendEvent(update,a);
-		}
+		broadEvent(update);
 	}
 	else{
 		qDebug()<<"Can Not Move To This Position";
