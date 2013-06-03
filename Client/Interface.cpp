@@ -206,7 +206,7 @@ Interface::Interface(QWidget *parent):
 					unlocked=true;
 					--blocked;
 				}
-				Share::square->setPixmap(item.mid(2).toInt(),Utils::fromByteArray<QPixmap>(d[item]));
+				Share::square->insertBit(item.mid(2).toInt(),d[item]);
 			}
 			if(item.startsWith("C:")){
 				chat->append(d[item]);
