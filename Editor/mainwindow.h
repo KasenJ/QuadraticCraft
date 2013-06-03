@@ -1,27 +1,16 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+
+#include <QtSql>
+#include <QtGui>
+#include <QtCore>
 #include <combinelist.h>
 #include <listpass.h>
-#include <QPicture>
-#include <QtGui>
-#include <QMainWindow>
 #include <bitmap.h>
-#include <QPaintEvent>
-#include <QKeyEvent>
-#include <QMouseEvent>
-#include <QString>
-#include "bitmap.h"
-#include <QPointer>
-#include <QPicture>
 #include <newdialog.h>
-#include <QString>
-#include <QFile>
-#include <QFileDialog>
-#include <QTextStream>
-#include <QtCore>
-#include <QtSql>
 #include "Images.h"
 #include "Render.h"
+
 namespace Ui {
 class MainWindow;
 }

@@ -8,13 +8,18 @@ void Handler::DataEventHandle(const DataEvent &event,const QHostAddress &address
 	int flag=!data.isEmpty();
 	for(QString item:data.keys()){
 		if(item.startsWith("T:")){
-			query.prepare("SELECT Texture FROM Bit WHERE Type=?");
+			query.prepare("SELECT Info,Texture FROM Bit WHERE Type=?");
 			query.addBindValue(item.mid(2).toInt());
 			query.exec();
 			if(query.first()){
-				data[item]=query.value("Texture").toByteArray();
+				QDataStream s(&data[item],QIODevice::WriteOnly);
+				QDataStream r(query.value("Info").toByteArray());
+				QString n,d;
+				r>>n>>d;
+				s<<n<<d<<query.value("Texture").toByteArray();
 			}
 			else{
+				qDebug()<<"Texture"<<item.mid(2).toInt()<<"Not Exist";
 				flag=0;
 				break;
 			}

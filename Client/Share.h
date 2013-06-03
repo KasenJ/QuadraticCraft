@@ -12,15 +12,19 @@ class Square:public QObject
 public:
 	explicit Square(QObject *parent=0);
 	QPixmap getPixmap(BitType t);
-	void setPixmap(BitType t,const QPixmap &p);
+	QString getName(BitType t);
+	QString getDesc(BitType t);
 	QList<QPixmap> getPixmaps(SquareType s);
+	void insertBit(BitType t,const QByteArray &a);
 	bool setLoad(bool enabled);
 
 private:
 	bool load=false;
 	QSqlDatabase data;
 	QSet<BitType> blank;
-	QHash<quint8,QPixmap> map;
+	QHash<quint8,QPixmap> pm;
+	QHash<quint8,QString> nm;
+	QHash<quint8,QString> dm;
 
 };
 
