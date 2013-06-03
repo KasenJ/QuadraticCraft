@@ -30,11 +30,20 @@ void Handler::UserEventHandle(const UserEvent &event,const QHostAddress &address
 			if(query.first()){
 				QRect w=Utils::fromByteArray<QRect>(query.value("Data").toByteArray());
 				qsrand(QTime::currentTime().msec());
+				int p;
+				bool c=true;
+				while(c){
+					p=Utils::toInt(w.topLeft()+QPoint(qrand()%w.width(),qrand()%w.height()));
+					query.prepare("SELECT Move FROM Cube,Bit WHERE Position=? AND Cube.Type%256=Bit.Type");
+					query.addBindValue(p);
+					query.exec();
+					c=!query.first();
+				}
 				query.prepare("INSERT INTO Player VALUES (?,?,?,?)");
 				query.addBindValue(event.getUsername());
 				query.addBindValue(event.getPassword());
 				query.addBindValue(128);
-				query.addBindValue(Utils::toInt(w.topLeft()+QPoint(qrand()%w.width(),qrand()%w.height())));
+				query.addBindValue(p);
 				if(query.exec()){
 					qDebug()<<"Init Succeed";
 					reply.setState(UserEvent::Logged);

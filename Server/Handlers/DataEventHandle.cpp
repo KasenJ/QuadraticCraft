@@ -19,6 +19,7 @@ void Handler::DataEventHandle(const DataEvent &event,const QHostAddress &address
 				s<<n<<d<<query.value("Texture").toByteArray();
 			}
 			else{
+				qDebug()<<"Texture"<<item.mid(2).toInt()<<"Not Exist";
 				flag=0;
 				break;
 			}
