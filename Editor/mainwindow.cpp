@@ -9,10 +9,14 @@ MainWindow::MainWindow(QWidget *parent) :
     imageshow = new ImageS(ui->dockWidget);
     setMouseTracking(true);
 	imageshow->setGeometry(0,80,300,600);
-	auto sc=new QScrollArea(this);
-	render=new Render(imageshow,&Map);
+    auto sc=new QScrollArea(this);
+    render=new Render(imageshow,&Map);
 	sc->setWidget(render);
 	setCentralWidget(sc);
+    if(!Map.map.isEmpty()){
+        render->resize(Map.height*50,Map.width*50);
+        update();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -39,20 +43,21 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
 {
     if(e->button()==Qt::LeftButton)
     {
-        auto cursor = mapFromGlobal(QCursor::pos());
-        int x = (cursor.rx()-300)/50;
-        int y = (cursor.ry()-35)/50;
+        auto cursor=render->mapFrom(this,e->pos());
+        int x = cursor.x()/50;
+        int y = cursor.y()/50;
         if(x>=0&&y>=0&&x<=Map.width&&y<=Map.height){
-            if(cursor.rx()-300>0&&cursor.ry()-35>0)
+            if(cursor.rx()>0&&cursor.ry()>0)
                 setpic(x,y);
         }
-        this->update();
+        render->update();
     }
     if(e->button() == Qt::RightButton){
-		dragPosition = render->pos()-e->pos();
+        dragPosition = render->pos()-e->pos();
         e->accept();
     }
 }
+
 void MainWindow::setpic(int x,int y)
 {
     type = imageshow->getType();
@@ -132,6 +137,7 @@ void MainWindow::on_pushButton_3_clicked()
     data.open();
     data.transaction();
     query.exec("DELETE FROM Cube");
+    query.exec("DELETE FROM Info");
     for(int i=0; i < Map.width; i++)
     {
         query.prepare("INSERT INTO Cube VALUES(?,?)");
@@ -148,6 +154,18 @@ void MainWindow::on_pushButton_3_clicked()
         query.addBindValue(positions);
         query.execBatch();
     }
+
+    QPixmap p(50,50);
+    p.fill(Qt::black);
+    query.prepare("INSERT INTO Bit VALUES(0,0,0,?,?)");
+    query.addBindValue(QByteArray());
+    query.addBindValue(Utils::toByteArray(p));
+    query.exec();
+
+    query.prepare("INSERT INTO Info VALUES(?,?)");
+    query.addBindValue("Rect");
+    query.addBindValue(Utils::toByteArray(QRect(1,1,Map.width,Map.height)));
+    query.exec();
     data.commit();
 }
 

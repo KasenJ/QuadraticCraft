@@ -14,6 +14,14 @@
 namespace Ui {
 class ImageS;
 }
+struct Access{
+    int type;
+    QPixmap pic;
+    Access(){}
+    Access(int t,QPixmap p){
+        type =t;    pic = p;
+    }
+};
 
 class ImageS : public QWidget
 {
@@ -22,7 +30,7 @@ class ImageS : public QWidget
 public:
     explicit ImageS(QWidget *parent = 0);
     ~ImageS();
-	int getType(){return _type+1;}
+    int getType(){return imageS[select].type;}
     void mousePressEvent(QMouseEvent *);
     QPixmap atimageS(quint8 i);
 
@@ -32,11 +40,10 @@ private slots:
 
 private:
     Ui::ImageS *ui;
-    QVector<QPixmap> imageS;
-    int _type = 1;
+    QVector<Access> imageS;
+    int select = 0;
     void paintEvent(QPaintEvent *e);
     void load();
-
 };
 
 #endif // IMAGES_H

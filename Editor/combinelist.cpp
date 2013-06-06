@@ -26,7 +26,7 @@ void combineList::setList(Bitmap* map)
         ui->tableWidget->setItem(i,3,new QTableWidgetItem(QString::number(map->CombineList[i].third)));
         ui->tableWidget->setItem(i,4,new QTableWidgetItem(QString::number(map->CombineList[i].forth)));
         ui->tableWidget->setItem(i,5,new QTableWidgetItem(QString::number(map->CombineList[i].finish)));
-        ui->tableWidget->setItem(i,6,new QTableWidgetItem(map->CombineList[i].occupation));
+        ui->tableWidget->setItem(i,6,new QTableWidgetItem(QString::number(map->CombineList[i].occupation)));
     }
 }
 
@@ -50,9 +50,8 @@ void combineList::on_pushButton_Change_clicked()
             add = (add<<8) +temp[1];
             add = (add<<8) +temp[2];
             add = (add<<8) +temp[3];
-            qDebug()<<add;
             int fi = ui->tableWidget->item(i,5)->text().toInt();
-            QString occu = ui->tableWidget->item(i,6)->text();
+            int occu = ui->tableWidget->item(i,6)->text().toInt();
             map->addCombineList(i,temp[0],temp[1],temp[2],temp[3],fi,occu) ;
 
             query.prepare("INSERT INTO Formula VALUES(?,?,?)");
@@ -62,7 +61,6 @@ void combineList::on_pushButton_Change_clicked()
             query.exec();
         }
     }
-    data.close();
     this->setList(map);
 }
 
@@ -80,7 +78,7 @@ void combineList::on_pushButton_Add_clicked()
         add = (add<<8) +temp[2];
         add = (add<<8) +temp[3];
         int fi = ui->lineEdit_6->text().toInt();
-        QString p = ui->lineEdit_7->text();
+        int p = ui->lineEdit_7->text().toInt();
         map->addCombineList(i,temp[0],temp[1],temp[2],temp[3],fi,p);
     }
     this->setList(map);

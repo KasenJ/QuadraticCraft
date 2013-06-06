@@ -12,7 +12,7 @@ Bitmap::Bitmap()
     int comp;
     int temp[4] ;
     int result;
-    QString occu;
+    int occu;
     while(query.next()){
         comp = query.value("Composition").toInt();
         temp[3] = comp&0xFF;
@@ -20,7 +20,7 @@ Bitmap::Bitmap()
         temp[1] = (comp&0xFFFFFF)>>16;
         temp[0] = (comp&0xFFFFFFFF)>>24;
         result = query.value("Product").toInt();
-        occu = query.value("Occupation").toString();
+        occu = query.value("Occupation").toInt();
         addCombineList(i,temp[0],temp[1],temp[2],temp[3],result,occu);
         i++;
     }
@@ -29,6 +29,7 @@ Bitmap::Bitmap()
     query.exec("SELECT Count(*) FROM Cube");
     if(query.next())
         size = query.value(0).toInt();
+    qDebug()<<size;
 
     if(size != 0){
         query.exec("SELECT * FROM Cube");
@@ -50,12 +51,14 @@ Bitmap::Bitmap()
 
 void Bitmap::setBitmap(int h,int w)
 {
-    map =  QVector<quint64>(h*w,0);
-    height = h;
-    width = w;
+    if(map.isEmpty()){
+        map = QVector<quint64>(h*w);
+        height = h;
+        width = w;
+    }
 }
 
-void Bitmap::addCombineList(int index,int first, int second, int third, int forth, int finish,QString occupation)
+void Bitmap::addCombineList(int index,int first, int second, int third, int forth, int finish,int occupation)
 {
     if(index <= CombineList.size())
     {

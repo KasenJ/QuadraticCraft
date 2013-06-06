@@ -9,9 +9,9 @@ struct combine{
     int third;
     int forth;
     int finish;
-    QString occupation;
+    int occupation;
     combine(){}
-    combine(int first, int second, int third, int forth, int finish, QString occupation)
+    combine(int first, int second, int third, int forth, int finish, int occupation)
     {
         this->first = first;
         this->second = second;
@@ -33,7 +33,7 @@ public:
 
     Bitmap();
     void setBitmap(int h,int w);
-    void addCombineList(int index,int first,int second,int third,int forth,int finish,QString occupation);
+    void addCombineList(int index,int first,int second,int third,int forth,int finish,int occupation);
     void deletecombinelist(int );
     quint64& at(int x,int y);
 };

@@ -95,7 +95,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>画笔长</string>
+      <string>画笔宽</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
@@ -108,7 +108,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>画笔宽</string>
+      <string>画笔长</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton">

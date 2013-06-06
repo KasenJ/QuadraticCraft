@@ -6,8 +6,8 @@ ImageS::ImageS(QWidget *parent) :
     ui(new Ui::ImageS)
 {
     ui->setupUi(this);
-    imageS = QVector<QPixmap>(0);
     load();
+    qDebug()<<imageS.size();
 }
 
 ImageS::~ImageS()
@@ -26,22 +26,25 @@ void ImageS::paintEvent(QPaintEvent *)
             clown = 0;
             row++;
         }
-        painter.drawPixmap(clown*60,row*60,50,50,imageS[i]);
+        painter.drawPixmap(clown*60,row*60,50,50,imageS[i].pic);
+        if(i == select){
+            painter.drawRect(clown*60,row*60,50,50);
+        }
         clown++;
     }
 }
 
 void ImageS::mousePressEvent(QMouseEvent *e)
 {
-    if(e->button()==Qt::LeftButton)
-    {
+    if(e->button()==Qt::LeftButton){
         auto cursor = e->pos();
         int x = cursor.rx();
         int y = cursor.ry()-45;
         int temp = x/60 + (y/60)*5;
-        if(temp>=0 && temp<imageS.size())
-            _type = temp;
+        if(temp>=0 && temp< imageS.size())
+            select = temp;
     }
+    this->update();
 }
 
 QPixmap ImageS::atimageS(quint8 i)
@@ -51,7 +54,11 @@ QPixmap ImageS::atimageS(quint8 i)
         p.fill(Qt::black);
         return p;
     }
-    return imageS[i-1];
+    for(int j=0;j<imageS.size();j++){
+        if(i == imageS[j].type)
+            return imageS[j].pic;
+    }
+    return QPixmap();
 }
 
 void ImageS::on_pushButton_Load_clicked()
@@ -62,14 +69,14 @@ void ImageS::on_pushButton_Load_clicked()
 
 void ImageS::load()
 {
-    imageS = QVector<QPixmap>(0);
+    imageS = QVector<Access>(0);
     QSqlQuery query;
     query.exec("SELECT * FROM Bit");
     QByteArray b;
-    int i = 0;
+    int type;
     while(query.next()){
+        type = query.value("Type").toInt();
         b = query.value("Texture").toByteArray();
-        imageS.append(Utils::fromByteArray<QPixmap>(b));
-        i++;
+        imageS.append( Access(type,Utils::fromByteArray<QPixmap>(b)) );
     }
 }

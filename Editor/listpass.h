@@ -26,6 +26,8 @@ private slots:
 
     void on_pushButton_pic_clicked();
 
+    void on_pushButton_Info_clicked();
+
 private:
     Bitmap *map;
     Ui::listPass *ui;
